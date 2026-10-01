@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Acesso ao Nexo Assist.">
+  <title>Entrar | Nexo Assist</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="index.html"><span class="brand-mark"></span><strong>Nexo Assist</strong></a>
+    <div class="nav-actions"><a class="btn btn-secondary" href="index.html">Voltar ao site</a><a class="btn btn-primary" href="cadastro.html">Criar empresa</a></div>
+  </div>
+</header>
+<main class="login-shell">
+  <section class="login-brand">
+    <span class="eyebrow">Área do cliente</span>
+    <h1>Um acesso para o aplicativo e para a gestão da assinatura.</h1>
+    <p>O proprietário usará o mesmo e-mail e senha do aplicativo. No portal web, ele também poderá acompanhar plano, período grátis, mensalidades e cancelamento.</p>
+  </section>
+  <section class="login-panel">
+    <div class="login-box">
+      <span class="eyebrow">Entrar</span>
+      <h2>Acesse sua conta</h2>
+      <p>O acesso web será conectado à mesma conta Firebase do proprietário.</p>
+      <form onsubmit="event.preventDefault();document.querySelector('[data-toast]').classList.add('show');setTimeout(()=>document.querySelector('[data-toast]').classList.remove('show'),5000)">
+        <div class="field"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" required placeholder="voce@empresa.com.br"></div>
+        <div class="field"><label for="password">Senha</label><input id="password" type="password" autocomplete="current-password" required></div>
+        <button class="btn btn-primary" type="submit">Entrar</button>
+      </form>
+      <div class="helper-links"><a href="#">Esqueci minha senha</a><a href="cadastro.html">Criar empresa</a></div><a class="btn btn-secondary account-demo-link" href="conta.html">Ver portal do proprietário (protótipo)</a>
+      <div class="dev-note">Protótipo visual: o login web ainda não está conectado ao Firebase.</div>
+    </div>
+  </section>
+</main>
+<div class="toast" data-toast>Protótipo concluído. A autenticação real será conectada na próxima etapa.</div>
+
+<a class="support-float" href="https://wa.me/5541987902852?text=Ol%C3%A1%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20o%20Nexo%20Assist." target="_blank" rel="noopener" aria-label="Tirar dúvidas pelo WhatsApp">
+  <span class="support-status" aria-hidden="true"></span>
+  <span class="support-copy"><strong>Tire dúvidas</strong><small>Falar no WhatsApp</small></span>
+</a>
+
+</body>
+</html>
