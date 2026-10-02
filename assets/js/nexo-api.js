@@ -1,6 +1,12 @@
 (() => {
   const SESSION_KEY = "nexo_web_session";
 
+  // O token do portal existe somente durante a sessão da aba.
+  // Qualquer sessão antiga persistida em localStorage é invalidada.
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch {}
+
   function config() {
     const value = window.NEXO_PUBLIC_CONFIG || {};
     const missing = [
@@ -39,6 +45,8 @@
         USER_DISABLED: "Esta conta está desativada.",
         WEAK_PASSWORD: "Use uma senha mais forte.",
         TOO_MANY_ATTEMPTS_TRY_LATER: "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
+        INVALID_OOB_CODE: "Este link de autenticação é inválido ou já foi utilizado.",
+        EXPIRED_OOB_CODE: "Este link de autenticação expirou. Solicite um novo convite.",
       }[firebaseCode];
 
       throw new Error(friendly || supabaseMessage || firebaseCode || "Não foi possível concluir a solicitação.");
@@ -68,20 +76,23 @@
       email: email || data.email || "",
       expiresAt: Date.now() + Math.max(60, expiresIn - 60) * 1000,
     };
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
     return session;
   }
 
   function readSession() {
     try {
-      return JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+      return JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null");
     } catch {
       return null;
     }
   }
 
   function clearSession() {
-    localStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem(SESSION_KEY);
+    try {
+      localStorage.removeItem(SESSION_KEY);
+    } catch {}
   }
 
   async function refreshSession(session = readSession()) {
@@ -130,6 +141,37 @@
       returnSecureToken: true,
     });
     return saveSession(data, normalized);
+  }
+
+  async function signInWithEmailLink(email, oobCode) {
+    const normalized = String(email || "").trim().toLowerCase();
+    const data = await firebaseRequest("accounts:signInWithEmailLink", {
+      email: normalized,
+      oobCode: String(oobCode || "").trim(),
+    });
+    return {
+      session: saveSession(data, normalized),
+      isNewUser: Boolean(data?.isNewUser),
+    };
+  }
+
+  async function updatePassword(password) {
+    const current = await getSession();
+    const data = await firebaseRequest("accounts:update", {
+      idToken: current.idToken,
+      password,
+      returnSecureToken: true,
+    });
+
+    return saveSession(
+      {
+        ...data,
+        refreshToken:
+          data.refreshToken || data.refresh_token || current.refreshToken,
+        expiresIn: data.expiresIn || data.expires_in || 3600,
+      },
+      current.email,
+    );
   }
 
   async function sendEmailVerification(idToken) {
@@ -254,6 +296,8 @@
     config,
     signUp,
     signIn,
+    signInWithEmailLink,
+    updatePassword,
     signOut,
     sendEmailVerification,
     sendPasswordReset,
