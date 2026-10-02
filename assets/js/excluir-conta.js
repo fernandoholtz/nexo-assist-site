@@ -26,7 +26,12 @@ function renderRequest(request){
     return;
   }
   statusBox.hidden=false;
-  statusBox.innerHTML="<strong>Pedido atual: "+String(request.status||"requested")+"</strong><span>Registrado em "+date(request.requested_at)+".</span>";
+  statusBox.replaceChildren();
+  const strong=document.createElement("strong");
+  strong.textContent="Pedido atual: "+String(request.status||"requested");
+  const span=document.createElement("span");
+  span.textContent="Registrado em "+date(request.requested_at)+".";
+  statusBox.append(strong,span);
   requestButton.hidden=true;
   cancelButton.hidden=request.status!=="requested";
 }
