@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://vjynwgktulgwmgodluhp.supabase.co; form-action 'self'; upgrade-insecure-requests">
   <meta name="description" content="Ative seu acesso ao Nexo Assist.">
   <title>Ativar acesso | Nexo Assist</title>
   <link rel="stylesheet" href="assets/css/style.css">
@@ -39,7 +41,7 @@
         <div><small>Perfil</small><strong data-invite-role>—</strong></div>
       </div>
 
-      <div class="activation-tabs">
+      <div class="activation-tabs" data-auth-tabs>
         <button type="button" class="active" data-auth-mode="create">Criar minha senha</button>
         <button type="button" data-auth-mode="login">Já tenho conta Firebase</button>
       </div>
