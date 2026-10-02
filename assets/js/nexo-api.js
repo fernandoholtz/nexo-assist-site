@@ -49,7 +49,11 @@
         EXPIRED_OOB_CODE: "Este link de autenticação expirou. Solicite um novo convite.",
       }[firebaseCode];
 
-      throw new Error(friendly || supabaseMessage || firebaseCode || "Não foi possível concluir a solicitação.");
+      const requestError = new Error(
+        friendly || supabaseMessage || firebaseCode || "Não foi possível concluir a solicitação."
+      );
+      requestError.code = firebaseCode || "";
+      throw requestError;
     }
 
     return data;
