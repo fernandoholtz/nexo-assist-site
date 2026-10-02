@@ -3,54 +3,124 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Piloto gratuito do Nexo Assist.">
-  <title>Piloto gratuito | Nexo Assist</title>
+  <meta name="description" content="Cadastre sua empresa no Nexo Assist.">
+  <title>Criar empresa | Nexo Assist</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 <header class="site-header">
   <div class="container nav">
     <a class="brand" href="index.html"><span class="brand-mark"></span><strong>Nexo Assist</strong></a>
-    <div class="nav-actions"><a class="btn btn-secondary" href="planos.html">Ver proposta de planos</a></div>
+    <nav class="nav-links">
+      <a href="index.html#recursos">Recursos</a>
+      <a href="planos.html">Planos</a>
+      <a href="index.html#seguranca">Segurança</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="btn btn-secondary" href="login.html">Já tenho acesso</a>
+      <button class="menu-btn" type="button" data-menu aria-label="Abrir menu">☰</button>
+    </div>
   </div>
 </header>
-<main>
-  <section class="page-hero">
-    <div class="container">
-      <span class="eyebrow">Piloto gratuito</span>
-      <h1>O cadastro público pago ainda não está aberto.</h1>
-      <p>Estamos validando o Nexo Assist com uso controlado, sem cobrança. Os preços e franquias exibidos no site representam uma proposta comercial futura.</p>
-    </div>
-  </section>
-  <section class="section compact">
-    <div class="container">
-      <div class="usage-policy">
-        <div>
-          <span class="eyebrow">Por que o acesso está controlado?</span>
-          <h2>Queremos testar o produto sem prometer uma infraestrutura que ainda não contratamos.</h2>
-          <p>O projeto opera atualmente em serviços gratuitos. Antes de liberar assinatura paga, precisamos concluir testes em aparelhos reais, validações jurídicas e garantir capacidade suficiente para os limites comerciais publicados.</p>
-        </div>
-        <div class="usage-policy-flow">
-          <span><b>01</b> piloto gratuito e controlado</span>
-          <span><b>02</b> feedback de usuários reais</span>
-          <span><b>03</b> lançamento comercial somente quando a infraestrutura estiver pronta</span>
-        </div>
+
+<main class="section compact">
+  <div class="container form-shell">
+    <aside class="form-aside">
+      <span class="eyebrow">Criar empresa</span>
+      <h1>Cadastre sua empresa para o piloto controlado.</h1>
+      <p>O primeiro usuário será o proprietário da organização. A mesma conta será usada no aplicativo e no portal. Durante o piloto, não há cobrança.</p>
+      <div class="progress">
+        <div class="progress-item active"><i>1</i><span>Dados da empresa</span></div>
+        <div class="progress-item"><i>2</i><span>Responsável principal</span></div>
+        <div class="progress-item"><i>3</i><span>Plano e confirmação</span></div>
       </div>
-      <div class="legal-note"><strong>Quer participar do piloto?</strong> Fale com a equipe do Nexo Assist pelo atendimento disponível no site. Não há cobrança durante esta fase.</div>
-    </div>
-  </section>
-</main>
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-bottom">
-      <span>© 2026 Nexo Assist.</span>
-      <span><a href="termos.html">Termos</a> · <a href="privacidade.html">Privacidade</a></span>
-    </div>
+      <div class="dev-note">Cadastro seguro: a conta é criada no Firebase, o e-mail precisa ser confirmado e somente então a empresa é criada no backend com 14 dias de teste.</div>
+    </aside>
+
+    <form class="form-card" data-signup-form novalidate>
+      <section class="form-step active">
+        <h2>Dados da empresa</h2>
+        <p>Informações usadas para identificar a organização dentro do sistema.</p>
+        <div class="form-grid">
+          <div class="field full"><label for="nomeFantasia">Nome da empresa / nome fantasia *</label><input id="nomeFantasia" name="nomeFantasia" autocomplete="organization" required placeholder="Ex.: Tech Curitiba Assistência"></div>
+          <div class="field"><label for="razaoSocial">Razão social</label><input id="razaoSocial" name="razaoSocial" placeholder="Razão social da empresa"></div>
+          <div class="field"><label for="cnpj">CNPJ</label><input id="cnpj" name="cnpj" inputmode="text" placeholder="CNPJ da empresa"><small>A validação oficial será implementada no backend.</small></div>
+          <div class="field"><label for="telefoneEmpresa">Telefone / WhatsApp *</label><input id="telefoneEmpresa" name="telefoneEmpresa" autocomplete="tel" required placeholder="(41) 99999-9999"></div>
+          <div class="field"><label for="emailEmpresa">E-mail comercial *</label><input id="emailEmpresa" name="emailEmpresa" type="email" autocomplete="email" required placeholder="contato@empresa.com.br"></div>
+          <div class="field"><label for="segmento">Segmento *</label><select id="segmento" name="segmento" required><option value="">Selecione</option><option>Assistência técnica de informática</option><option>Assistência de celulares</option><option>Eletrônicos</option><option>Loja e assistência</option><option>Outro</option></select></div>
+          <div class="field"><label for="cep">CEP *</label><input id="cep" name="cep" inputmode="numeric" required placeholder="00000-000"></div>
+          <div class="field full"><label for="logradouro">Logradouro *</label><input id="logradouro" name="logradouro" required placeholder="Rua, avenida ou travessa"></div>
+          <div class="field"><label for="numero">Número *</label><input id="numero" name="numero" required placeholder="123"></div>
+          <div class="field"><label for="complemento">Complemento</label><input id="complemento" name="complemento" placeholder="Sala, loja, bloco..."></div>
+          <div class="field"><label for="bairro">Bairro *</label><input id="bairro" name="bairro" required></div>
+          <div class="field"><label for="cidade">Cidade *</label><input id="cidade" name="cidade" required></div>
+          <div class="field"><label for="uf">UF *</label><select id="uf" name="uf" required><option value="">UF</option><option>PR</option><option>SC</option><option>SP</option><option>RS</option><option>MG</option><option>RJ</option><option>Outro</option></select></div>
+        </div>
+        <div class="form-actions"><span></span><button class="btn btn-primary" type="button" data-next>Continuar</button></div>
+      </section>
+
+      <section class="form-step">
+        <h2>Responsável principal</h2>
+        <p>Esta pessoa será preparada para assumir o papel de proprietário da organização.</p>
+        <div class="form-grid">
+          <div class="field full"><label for="nomeResponsavel">Nome completo *</label><input id="nomeResponsavel" name="nomeResponsavel" autocomplete="name" required></div>
+          <div class="field"><label for="cargoResponsavel">Cargo *</label><input id="cargoResponsavel" name="cargoResponsavel" required placeholder="Ex.: Proprietário"></div>
+          <div class="field"><label for="telefoneResponsavel">Telefone *</label><input id="telefoneResponsavel" name="telefoneResponsavel" autocomplete="tel" required></div>
+          <div class="field full"><label for="emailAcesso">E-mail de acesso *</label><input id="emailAcesso" name="emailAcesso" type="email" autocomplete="username" required placeholder="voce@empresa.com.br"></div>
+          <div class="field"><label for="senha">Senha *</label><input id="senha" name="senha" type="password" autocomplete="new-password" minlength="8" required><small>Requisito inicial: mínimo de 8 caracteres.</small></div>
+          <div class="field"><label for="confirmarSenha">Confirmar senha *</label><input id="confirmarSenha" name="confirmarSenha" type="password" autocomplete="new-password" minlength="8" required></div>
+          <div class="field full"><label class="checkbox"><input id="responsavelGerente" type="checkbox" checked> <span>O responsável acima também será o gerente principal da empresa.</span></label></div>
+          <div class="field full" data-manager-fields>
+            <div class="form-grid">
+              <div class="field"><label for="nomeGerente">Nome do gerente *</label><input id="nomeGerente" name="nomeGerente" data-required="true"></div>
+              <div class="field"><label for="telefoneGerente">Telefone do gerente *</label><input id="telefoneGerente" name="telefoneGerente" data-required="true"></div>
+              <div class="field full"><label for="emailGerente">E-mail do gerente *</label><input id="emailGerente" name="emailGerente" type="email" data-required="true"></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions"><button class="btn btn-secondary" type="button" data-prev>Voltar</button><button class="btn btn-primary" type="button" data-next>Continuar</button></div>
+      </section>
+
+      <section class="form-step">
+        <h2>Plano e confirmação</h2>
+        <p>Selecione a referência de plano para testar limites e recursos. Os valores são proposta futura e nenhuma cobrança é realizada durante o piloto controlado.</p>
+        <div class="plan-choice">
+          <label><input type="radio" name="plano" value="essencial" required><strong>Essencial</strong><span>14 dias grátis • R$ 99/mês • 3 acessos • 500 produtos • 1 GB</span></label>
+          <label><input type="radio" name="plano" value="profissional" required checked><strong>Profissional</strong><span>14 dias grátis • R$ 179/mês • 10 acessos • 2.500 produtos • 5 GB</span></label>
+          <label><input type="radio" name="plano" value="gestao" required><strong>Gestão</strong><span>14 dias grátis • R$ 299/mês • 25 acessos • 10.000 produtos • 20 GB</span></label>
+        </div>
+        <div style="height:18px"></div>
+        <label class="checkbox"><input id="aceiteCondicoesPlano" type="checkbox" required> <span>Li as <a href="condicoes-planos.html" target="_blank" rel="noopener">condições e limites do plano</a>. Os Termos de Uso e a Política de Privacidade definitivos serão apresentados antes do lançamento comercial.</span></label>
+        <div style="height:12px"></div>
+        <label class="checkbox"><input id="declaracaoVerdade" type="checkbox" required> <span>Confirmo que sou responsável por fornecer informações verdadeiras sobre a empresa.</span></label>
+        <div class="dev-note">Fluxo atual: criar conta → confirmar e-mail → criar organização e OWNER → iniciar teste de 14 dias. Nenhuma cobrança é realizada nesta etapa.</div>
+        <div class="form-actions"><button class="btn btn-secondary" type="button" data-prev>Voltar</button><button class="btn btn-primary" type="submit" data-signup-submit>Enviar confirmação de e-mail</button></div>
+      </section>
+    </form>
+
+    <section class="signup-verification" data-signup-verification hidden>
+      <span class="eyebrow">Confirmação de e-mail</span>
+      <h2>Confirme seu e-mail para ativar a empresa.</h2>
+      <p data-verification-copy>Enviamos uma mensagem de confirmação. Depois de clicar no link recebido, volte a esta página.</p>
+      <div class="verification-actions">
+        <button class="btn btn-primary" type="button" data-verify-finish>Já confirmei meu e-mail</button>
+        <button class="btn btn-secondary" type="button" data-verify-resend>Reenviar confirmação</button>
+      </div>
+      <div class="dev-note">A senha nunca é armazenada pelo site. O rascunho local guarda apenas os dados necessários para concluir a criação da empresa após a confirmação.</div>
+    </section>
   </div>
-</footer>
-<a class="support-float" href="https://wa.me/5541987902852?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20o%20piloto%20do%20Nexo%20Assist." target="_blank" rel="noopener" aria-label="Falar sobre o piloto no WhatsApp">
+</main>
+
+<div class="toast" data-toast></div>
+<script src="assets/js/runtime-config.js"></script>
+<script src="assets/js/nexo-api.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/cadastro.js"></script>
+
+<a class="support-float" href="https://wa.me/5541987902852?text=Ol%C3%A1%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20o%20Nexo%20Assist." target="_blank" rel="noopener" aria-label="Tirar dúvidas pelo WhatsApp">
   <span class="support-status" aria-hidden="true"></span>
-  <span class="support-copy"><strong>Piloto gratuito</strong><small>Falar no WhatsApp</small></span>
+  <span class="support-copy"><strong>Tire dúvidas</strong><small>Falar no WhatsApp</small></span>
 </a>
+
 </body>
 </html>
