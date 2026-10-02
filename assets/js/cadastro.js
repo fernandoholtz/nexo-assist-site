@@ -81,11 +81,11 @@ if(form){
   }
 
   function saveDraft(draft){
-    localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+    sessionStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
   }
 
   function readDraft(){
-    try{return JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");}
+    try{return JSON.parse(sessionStorage.getItem(DRAFT_KEY)||"null");}
     catch{return null;}
   }
 
@@ -114,8 +114,8 @@ if(form){
 
     try{
       const result=await window.NexoApi.bootstrapCompany(draft);
-      localStorage.removeItem(DRAFT_KEY);
-      localStorage.setItem("nexo_onboarding_result",JSON.stringify(Array.isArray(result)?result[0]:result));
+      sessionStorage.removeItem(DRAFT_KEY);
+      sessionStorage.setItem("nexo_onboarding_result",JSON.stringify(Array.isArray(result)?result[0]:result));
       showToast("Empresa criada e registrada. Seu período de 14 dias começou.");
       setTimeout(()=>window.location.href="conta.html",900);
     }catch(error){
@@ -193,6 +193,6 @@ if(form){
   if(pending){
     window.NexoApi.getSession()
       .then(()=>showVerification(pending))
-      .catch(()=>localStorage.removeItem(DRAFT_KEY));
+      .catch(()=>sessionStorage.removeItem(DRAFT_KEY));
   }
 }
