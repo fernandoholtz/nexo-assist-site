@@ -231,20 +231,18 @@
 
   async function getAccountDeletionRequests() {
     const session = await getSession();
+    const { supabaseUrl, supabasePublishableKey } = config();
     const url =
-      config.supabaseUrl +
+      supabaseUrl +
       "/rest/v1/account_deletion_requests?select=id,status,requested_at,organization_id,requester_role&status=in.(requested,processing)&order=requested_at.desc&limit=1";
     const response = await fetch(url, {
       headers: {
-        apikey: config.supabasePublishableKey,
+        apikey: supabasePublishableKey,
         Authorization: "Bearer " + session.idToken,
       },
     });
 
-    const payload = await parseResponse(response);
-    if (!response.ok) {
-      throw new Error(extractError(payload, "Não foi possível consultar o pedido de exclusão."));
-    }
+    const payload = await readJson(response);
     return Array.isArray(payload) && payload[0] ? payload[0] : null;
   }
 
