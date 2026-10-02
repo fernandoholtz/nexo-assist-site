@@ -28,15 +28,16 @@
 <main class="section compact">
   <div class="container form-shell">
     <aside class="form-aside">
+      <a class="page-back" href="index.html">← Voltar</a>
       <span class="eyebrow">Criar empresa</span>
-      <h1>Cadastre sua empresa para o piloto controlado.</h1>
+      <h1>Cadastre sua empresa para começar a testar o Nexo Assist.</h1>
       <p>O primeiro usuário será o proprietário da organização. A mesma conta será usada no aplicativo e no portal. Durante o piloto, não há cobrança.</p>
       <div class="progress">
         <div class="progress-item active"><i>1</i><span>Dados da empresa</span></div>
         <div class="progress-item"><i>2</i><span>Responsável principal</span></div>
         <div class="progress-item"><i>3</i><span>Plano e confirmação</span></div>
       </div>
-      <div class="dev-note">Cadastro seguro: a conta é criada no Firebase, o e-mail precisa ser confirmado e somente então a empresa é criada no backend com 14 dias de teste.</div>
+      <div class="dev-note">Primeiro você cria sua conta e confirma o e-mail. Depois disso, sua empresa é ativada com 14 dias de teste gratuito.</div>
     </aside>
 
     <form class="form-card" data-signup-form novalidate>
@@ -46,7 +47,7 @@
         <div class="form-grid">
           <div class="field full"><label for="nomeFantasia">Nome da empresa / nome fantasia *</label><input id="nomeFantasia" name="nomeFantasia" autocomplete="organization" required placeholder="Ex.: Tech Curitiba Assistência"></div>
           <div class="field"><label for="razaoSocial">Razão social</label><input id="razaoSocial" name="razaoSocial" placeholder="Razão social da empresa"></div>
-          <div class="field"><label for="cnpj">CNPJ</label><input id="cnpj" name="cnpj" inputmode="text" placeholder="CNPJ da empresa"><small>A validação oficial será implementada no backend.</small></div>
+          <div class="field"><label for="cnpj">CNPJ</label><input id="cnpj" name="cnpj" inputmode="text" placeholder="CNPJ da empresa"><small>A validação oficial do CNPJ será concluída antes do lançamento comercial.</small></div>
           <div class="field"><label for="telefoneEmpresa">Telefone / WhatsApp *</label><input id="telefoneEmpresa" name="telefoneEmpresa" autocomplete="tel" required placeholder="(41) 99999-9999"></div>
           <div class="field"><label for="emailEmpresa">E-mail comercial *</label><input id="emailEmpresa" name="emailEmpresa" type="email" autocomplete="email" required placeholder="contato@empresa.com.br"></div>
           <div class="field"><label for="segmento">Segmento *</label><select id="segmento" name="segmento" required><option value="">Selecione</option><option>Assistência técnica de informática</option><option>Assistência de celulares</option><option>Eletrônicos</option><option>Loja e assistência</option><option>Outro</option></select></div>
@@ -69,8 +70,8 @@
           <div class="field"><label for="cargoResponsavel">Cargo *</label><input id="cargoResponsavel" name="cargoResponsavel" required placeholder="Ex.: Proprietário"></div>
           <div class="field"><label for="telefoneResponsavel">Telefone *</label><input id="telefoneResponsavel" name="telefoneResponsavel" autocomplete="tel" required></div>
           <div class="field full"><label for="emailAcesso">E-mail de acesso *</label><input id="emailAcesso" name="emailAcesso" type="email" autocomplete="username" required placeholder="voce@empresa.com.br"></div>
-          <div class="field"><label for="senha">Senha *</label><input id="senha" name="senha" type="password" autocomplete="new-password" minlength="8" required><small>Requisito inicial: mínimo de 8 caracteres.</small></div>
-          <div class="field"><label for="confirmarSenha">Confirmar senha *</label><input id="confirmarSenha" name="confirmarSenha" type="password" autocomplete="new-password" minlength="8" required></div>
+          <div class="field"><label for="senha">Senha *</label><div class="password-wrap"><input id="senha" name="senha" type="password" autocomplete="new-password" minlength="8" required><button class="password-toggle" type="button" data-password-toggle="senha" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div><small>Use pelo menos 8 caracteres.</small></div>
+          <div class="field"><label for="confirmarSenha">Confirmar senha *</label><div class="password-wrap"><input id="confirmarSenha" name="confirmarSenha" type="password" autocomplete="new-password" minlength="8" required><button class="password-toggle" type="button" data-password-toggle="confirmarSenha" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div></div>
           <div class="field full"><label class="checkbox"><input id="responsavelGerente" type="checkbox" checked> <span>O responsável acima também será o gerente principal da empresa.</span></label></div>
           <div class="field full" data-manager-fields>
             <div class="form-grid">
@@ -95,7 +96,7 @@
         <label class="checkbox"><input id="aceiteCondicoesPlano" type="checkbox" required> <span>Li as <a href="condicoes-planos.html" target="_blank" rel="noopener">condições e limites do plano</a>. Os Termos de Uso e a Política de Privacidade definitivos serão apresentados antes do lançamento comercial.</span></label>
         <div style="height:12px"></div>
         <label class="checkbox"><input id="declaracaoVerdade" type="checkbox" required> <span>Confirmo que sou responsável por fornecer informações verdadeiras sobre a empresa.</span></label>
-        <div class="dev-note">Fluxo atual: criar conta → confirmar e-mail → criar organização e OWNER → iniciar teste de 14 dias. Nenhuma cobrança é realizada nesta etapa.</div>
+        <div class="dev-note">Fluxo atual: criar conta → confirmar e-mail → ativar a empresa → iniciar 14 dias de teste. Nenhuma cobrança é realizada nesta etapa.</div>
         <div class="form-actions"><button class="btn btn-secondary" type="button" data-prev>Voltar</button><button class="btn btn-primary" type="submit" data-signup-submit>Enviar confirmação de e-mail</button></div>
       </section>
     </form>
@@ -118,6 +119,7 @@
 <script src="assets/js/nexo-api.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/cadastro.js"></script>
+<script src="assets/js/auth-ui.js"></script>
 
 <a class="support-float" href="https://wa.me/5541987902852?text=Ol%C3%A1%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20o%20Nexo%20Assist." target="_blank" rel="noopener" aria-label="Tirar dúvidas pelo WhatsApp">
   <span class="support-status" aria-hidden="true"></span>

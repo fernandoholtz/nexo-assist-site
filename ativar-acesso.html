@@ -19,6 +19,7 @@
 
 <main class="activation-shell">
   <section class="activation-card">
+    <a class="page-back" href="index.html">← Voltar</a>
     <span class="eyebrow">Convite da equipe</span>
     <div data-invite-loading>
       <h1>Validando seu convite...</h1>
@@ -32,7 +33,7 @@
 
     <div data-invite-content hidden>
       <h1>Crie seu próprio acesso.</h1>
-      <p>O proprietário não recebe nem define sua senha. Você cria a própria credencial e o backend vincula a conta somente após validar o convite.</p>
+      <p>O proprietário não recebe nem define sua senha. Você cria sua própria senha e o acesso só é liberado depois que o convite é validado.</p>
 
       <div class="invite-summary">
         <div><small>Empresa</small><strong data-invite-company>—</strong></div>
@@ -43,7 +44,7 @@
 
       <div class="activation-tabs" data-auth-tabs>
         <button type="button" class="active" data-auth-mode="create">Criar minha senha</button>
-        <button type="button" data-auth-mode="login">Já tenho conta Firebase</button>
+        <button type="button" data-auth-mode="login">Já tenho uma conta</button>
       </div>
 
       <form data-invite-form>
@@ -53,19 +54,19 @@
         </div>
         <div class="field">
           <label for="invitePassword" data-password-label>Crie uma senha</label>
-          <input id="invitePassword" type="password" minlength="8" required autocomplete="new-password">
-          <small data-password-help>Mínimo de 8 caracteres. A senha vai somente para o Firebase.</small>
+          <div class="password-wrap"><input id="invitePassword" type="password" minlength="8" required autocomplete="new-password"><button class="password-toggle" type="button" data-password-toggle="invitePassword" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div>
+          <small data-password-help>Use pelo menos 8 caracteres. Sua senha não é compartilhada com o proprietário.</small>
         </div>
         <div class="field" data-confirm-field>
           <label for="invitePasswordConfirm">Confirmar senha</label>
-          <input id="invitePasswordConfirm" type="password" minlength="8" required autocomplete="new-password">
+          <div class="password-wrap"><input id="invitePasswordConfirm" type="password" minlength="8" required autocomplete="new-password"><button class="password-toggle" type="button" data-password-toggle="invitePasswordConfirm" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div>
         </div>
         <button class="btn btn-primary" type="submit" data-invite-submit>Enviar confirmação de e-mail</button>
       </form>
 
       <div class="activation-verify" data-invite-verify hidden>
         <h2>Confirme seu e-mail.</h2>
-        <p>Clique no link enviado pelo Firebase. Depois volte aqui para concluir o vínculo.</p>
+        <p>Clique no link enviado ao seu e-mail. Depois volte aqui para concluir o acesso.</p>
         <div class="verification-actions">
           <button class="btn btn-primary" type="button" data-invite-finish>Já confirmei meu e-mail</button>
           <button class="btn btn-secondary" type="button" data-invite-resend>Reenviar confirmação</button>
@@ -86,5 +87,6 @@
 <script src="assets/js/runtime-config.js"></script>
 <script src="assets/js/nexo-api.js"></script>
 <script src="assets/js/ativar-acesso.js"></script>
+<script src="assets/js/auth-ui.js"></script>
 </body>
 </html>
