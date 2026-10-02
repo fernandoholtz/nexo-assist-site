@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Ative seu acesso ao Nexo Assist.">
+  <title>Ativar acesso | Nexo Assist</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="account-page">
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="index.html"><span class="brand-mark"></span><strong>Nexo Assist</strong></a>
+    <div class="nav-actions"><a class="btn btn-secondary" href="login.html">Já tenho acesso</a></div>
+  </div>
+</header>
+
+<main class="activation-shell">
+  <section class="activation-card">
+    <span class="eyebrow">Convite da equipe</span>
+    <div data-invite-loading>
+      <h1>Validando seu convite...</h1>
+      <p>Estamos conferindo a empresa, o funcionário e a validade do link.</p>
+    </div>
+
+    <div data-invite-invalid hidden>
+      <h1>Este convite não está disponível.</h1>
+      <p data-invite-error>O link pode ter expirado, sido cancelado ou já utilizado.</p>
+    </div>
+
+    <div data-invite-content hidden>
+      <h1>Crie seu próprio acesso.</h1>
+      <p>O proprietário não recebe nem define sua senha. Você cria a própria credencial e o backend vincula a conta somente após validar o convite.</p>
+
+      <div class="invite-summary">
+        <div><small>Empresa</small><strong data-invite-company>—</strong></div>
+        <div><small>Funcionário</small><strong data-invite-name>—</strong></div>
+        <div><small>E-mail do convite</small><strong data-invite-email>—</strong></div>
+        <div><small>Perfil</small><strong data-invite-role>—</strong></div>
+      </div>
+
+      <div class="activation-tabs">
+        <button type="button" class="active" data-auth-mode="create">Criar minha senha</button>
+        <button type="button" data-auth-mode="login">Já tenho conta Firebase</button>
+      </div>
+
+      <form data-invite-form>
+        <div class="field">
+          <label for="inviteEmail">E-mail</label>
+          <input id="inviteEmail" type="email" readonly autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="invitePassword" data-password-label>Crie uma senha</label>
+          <input id="invitePassword" type="password" minlength="8" required autocomplete="new-password">
+          <small data-password-help>Mínimo de 8 caracteres. A senha vai somente para o Firebase.</small>
+        </div>
+        <div class="field" data-confirm-field>
+          <label for="invitePasswordConfirm">Confirmar senha</label>
+          <input id="invitePasswordConfirm" type="password" minlength="8" required autocomplete="new-password">
+        </div>
+        <button class="btn btn-primary" type="submit" data-invite-submit>Enviar confirmação de e-mail</button>
+      </form>
+
+      <div class="activation-verify" data-invite-verify hidden>
+        <h2>Confirme seu e-mail.</h2>
+        <p>Clique no link enviado pelo Firebase. Depois volte aqui para concluir o vínculo.</p>
+        <div class="verification-actions">
+          <button class="btn btn-primary" type="button" data-invite-finish>Já confirmei meu e-mail</button>
+          <button class="btn btn-secondary" type="button" data-invite-resend>Reenviar confirmação</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="activation-success" data-invite-success hidden>
+      <span class="status-badge">Acesso ativado</span>
+      <h1>Seu vínculo foi confirmado.</h1>
+      <p>Agora você pode entrar no Nexo Assist com o mesmo e-mail e senha que acabou de configurar.</p>
+      <a class="btn btn-primary" href="login.html">Entrar no portal</a>
+    </div>
+  </section>
+</main>
+
+<div class="toast" data-toast></div>
+<script src="assets/js/runtime-config.js"></script>
+<script src="assets/js/nexo-api.js"></script>
+<script src="assets/js/ativar-acesso.js"></script>
+</body>
+</html>
