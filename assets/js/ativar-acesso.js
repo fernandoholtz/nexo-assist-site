@@ -1,13 +1,43 @@
 (() => {
+  const INVITE_TOKEN_KEY="nexo_invite_token";
   const toast=document.querySelector("[data-toast]");
   const params=new URLSearchParams(window.location.search);
-  const token=params.get("token")||"";
+
+  function readTokenFromUrl(){
+    const direct=params.get("token");
+    if(direct)return direct;
+
+    const continueUrl=params.get("continueUrl");
+    if(continueUrl){
+      try{
+        return new URL(continueUrl).searchParams.get("token")||"";
+      }catch{}
+    }
+
+    return "";
+  }
+
+  let token=readTokenFromUrl();
+  if(token){
+    try{sessionStorage.setItem(INVITE_TOKEN_KEY,token);}catch{}
+  }else{
+    try{token=sessionStorage.getItem(INVITE_TOKEN_KEY)||"";}catch{}
+  }
+
+  const oobCode=params.get("oobCode")||"";
+  const hasEmailLink=params.get("mode")==="signIn"&&Boolean(oobCode);
+
+  if((token||oobCode)&&window.history?.replaceState){
+    window.history.replaceState(null,document.title,window.location.pathname);
+  }
+
   const loading=document.querySelector("[data-invite-loading]");
   const invalid=document.querySelector("[data-invite-invalid]");
-  const content=document.querySelector("[data-invite-content]");
+  const contentBox=document.querySelector("[data-invite-content]");
   const success=document.querySelector("[data-invite-success]");
   const form=document.querySelector("[data-invite-form]");
   const verify=document.querySelector("[data-invite-verify]");
+  const authTabs=document.querySelector("[data-auth-tabs]");
   const emailInput=document.querySelector("#inviteEmail");
   const passwordInput=document.querySelector("#invitePassword");
   const confirmInput=document.querySelector("#invitePasswordConfirm");
@@ -25,9 +55,13 @@
     setTimeout(()=>toast.classList.remove("show"),6500);
   }
 
+  function clearInviteToken(){
+    try{sessionStorage.removeItem(INVITE_TOKEN_KEY);}catch{}
+  }
+
   function showInvalid(message){
     loading.hidden=true;
-    content.hidden=true;
+    contentBox.hidden=true;
     invalid.hidden=false;
     const error=document.querySelector("[data-invite-error]");
     if(error&&message)error.textContent=message;
@@ -35,13 +69,26 @@
 
   function setMode(next){
     mode=next;
+    const emailLink=mode==="email-link";
+    const create=mode==="create"||emailLink;
+
+    if(authTabs)authTabs.hidden=emailLink;
+
     document.querySelectorAll("[data-auth-mode]").forEach(button=>{
       button.classList.toggle("active",button.dataset.authMode===mode);
     });
-    const create=mode==="create";
+
     confirmField.hidden=!create;
     confirmInput.required=create;
     passwordInput.autocomplete=create?"new-password":"current-password";
+
+    if(emailLink){
+      passwordLabel.textContent="Defina sua senha";
+      passwordHelp.textContent="O e-mail já foi confirmado. Defina a senha que você usará no aplicativo.";
+      submit.textContent="Definir senha e ativar acesso";
+      return;
+    }
+
     passwordLabel.textContent=create?"Crie uma senha":"Sua senha atual";
     passwordHelp.textContent=create
       ?"Mínimo de 8 caracteres. A senha vai somente para o Firebase."
@@ -61,8 +108,26 @@
 
     const verified=await window.NexoApi.refreshSession(session);
     await window.NexoApi.rpc("accept_team_invitation",{target_token:token},verified.idToken);
-    content.hidden=true;
+    clearInviteToken();
+    contentBox.hidden=true;
     success.hidden=false;
+  }
+
+  async function completeEmailLink(){
+    if(!hasEmailLink)return;
+
+    try{
+      await window.NexoApi.signInWithEmailLink(preview.invitation_email,oobCode);
+      setMode("email-link");
+      showToast("E-mail confirmado. Defina sua senha para concluir o acesso.");
+    }catch(error){
+      clearInviteToken();
+      showInvalid(
+        error instanceof Error
+          ?error.message
+          :"O link de e-mail é inválido ou expirou. Solicite um novo convite."
+      );
+    }
   }
 
   async function loadPreview(){
@@ -75,6 +140,7 @@
       const data=await window.NexoApi.rpcPublic("get_team_invitation_preview",{target_token:token});
       preview=Array.isArray(data)?data[0]:data;
       if(!preview?.is_valid){
+        clearInviteToken();
         showInvalid("O convite expirou, foi cancelado ou já foi utilizado.");
         return;
       }
@@ -86,7 +152,11 @@
         preview.invitation_role==="admin"?"Administrador":"Funcionário";
       emailInput.value=preview.invitation_email||"";
       loading.hidden=true;
-      content.hidden=false;
+      contentBox.hidden=false;
+
+      if(hasEmailLink){
+        await completeEmailLink();
+      }
     }catch(error){
       showInvalid(error instanceof Error?error.message:"Não foi possível validar o convite.");
     }
@@ -105,14 +175,18 @@
       showToast("Use uma senha com pelo menos 8 caracteres.");
       return;
     }
-    if(mode==="create"&&password!==confirmInput.value){
+    if((mode==="create"||mode==="email-link")&&password!==confirmInput.value){
       showToast("A confirmação da senha precisa ser igual.");
       return;
     }
 
     submit.disabled=true;
     try{
-      if(mode==="create"){
+      if(mode==="email-link"){
+        await window.NexoApi.updatePassword(password);
+        await acceptInvite();
+        showToast("Senha definida e acesso ativado com sucesso.");
+      }else if(mode==="create"){
         const session=await window.NexoApi.signUp(preview.invitation_email,password);
         await window.NexoApi.sendEmailVerification(session.idToken);
         form.hidden=true;
