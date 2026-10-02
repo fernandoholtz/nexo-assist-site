@@ -11,7 +11,7 @@
 <header class="site-header">
   <div class="container nav">
     <a class="brand" href="index.html"><span class="brand-mark"></span><strong>Nexo Assist</strong></a>
-    <div class="nav-actions"><a class="btn btn-secondary" href="index.html">Voltar ao site</a><a class="btn btn-primary" href="login.html">Tela de login</a></div>
+    <div class="nav-actions"><a class="btn btn-secondary" href="index.html">Voltar ao site</a><a class="btn btn-primary" href="#" data-logout>Sair</a></div>
   </div>
 </header>
 <main class="section compact">
@@ -26,49 +26,49 @@
         <a href="#empresa">Empresa</a>
         <a href="#seguranca-conta">Segurança</a>
       </nav>
-      <div class="dev-note">Protótipo visual. Nenhuma cobrança ou cancelamento real é executado nesta página.</div>
+      <div class="dev-note">Dados carregados da conta autenticada. Cobranças externas só serão ativadas quando o provedor estiver configurado.</div>
     </aside>
     <div class="account-main">
       <section class="account-hero" id="assinatura">
-        <div><span class="status-badge">Período grátis</span><h2>Plano Profissional</h2><p>14 dias de teste grátis. A primeira cobrança só será realizada após o término do período de teste se a assinatura continuar ativa.</p></div>
-        <div class="account-price"><strong>R$ 179</strong><span>/mês após o teste</span></div>
+        <div><span class="status-badge" data-subscription-status>Carregando</span><h2 data-plan-name>Plano</h2><p data-subscription-copy>Consultando assinatura...</p></div>
+        <div class="account-price"><strong data-plan-price>—</strong><span>/mês</span></div>
       </section>
       <div class="account-grid">
         <section class="account-card">
           <span class="card-kicker">Assinatura</span><h3>Controle do plano</h3>
-          <div class="account-data-row"><span>Status</span><strong>Teste grátis</strong></div>
-          <div class="account-data-row"><span>Período inicial</span><strong>14 dias</strong></div>
-          <div class="account-data-row"><span>Renovação</span><strong>Mensal</strong></div>
+          <div class="account-data-row"><span>Status</span><strong data-status-value>—</strong></div>
+          <div class="account-data-row"><span>Fim do teste / período</span><strong data-access-date>—</strong></div>
+          <div class="account-data-row"><span>Próxima cobrança</span><strong data-next-payment>—</strong></div>
           <div class="account-actions"><a class="btn btn-secondary" href="planos.html">Alterar plano</a><button class="btn btn-danger" type="button" data-cancel-open>Cancelar assinatura</button></div>
         </section>
         <section class="account-card" id="pagamentos">
           <span class="card-kicker">Pagamentos</span><h3>Mensalidades e forma de pagamento</h3>
-          <div class="account-data-row"><span>Durante o teste</span><strong>R$ 0,00</strong></div>
-          <div class="account-data-row"><span>Próxima cobrança</span><strong>Após os 14 dias</strong></div>
-          <div class="account-data-row"><span>Provedor</span><strong>Integração futura</strong></div>
+          <div class="account-data-row"><span>Último pagamento</span><strong data-last-payment>Nenhum</strong></div>
+          <div class="account-data-row"><span>Histórico</span><strong data-payment-count>0 pagamentos</strong></div>
+          <div class="account-data-row"><span>Provedor</span><strong data-provider>—</strong></div>
           <button class="btn btn-secondary" type="button" disabled>Gerenciar pagamento em breve</button>
         </section>
       </div>
       <section class="account-card account-wide" id="uso-plano">
         <div class="account-card-head">
           <div><span class="card-kicker">Uso do plano</span><h3>Capacidade contratada</h3></div>
-          <span class="prototype-pill">Demonstração</span>
+          <span class="prototype-pill">Tempo real</span>
         </div>
-        <p class="account-copy">No portal real, estes números serão calculados a partir da organização do proprietário.</p>
+        <p class="account-copy">Consumo calculado a partir da organização autenticada.</p>
         <div class="quota-grid">
-          <div class="quota-item"><div><span>Armazenamento</span><strong>2,1 GB de 5 GB</strong></div><div class="quota-bar"><i style="width:42%"></i></div></div>
-          <div class="quota-item"><div><span>Produtos ativos</span><strong>384 de 2.500</strong></div><div class="quota-bar"><i style="width:15%"></i></div></div>
-          <div class="quota-item"><div><span>Acessos ativos</span><strong>4 de 10</strong></div><div class="quota-bar"><i style="width:40%"></i></div></div>
-          <div class="quota-item"><div><span>Fotos por OS</span><strong>até 12</strong></div><div class="quota-rule">Limite aplicado por ordem de serviço</div></div>
+          <div class="quota-item"><div><span>Armazenamento</span><strong><span data-storage-usage>—</span></strong></div><div class="quota-bar"><i style="width:42%"></i></div></div>
+          <div class="quota-item"><div><span>Produtos ativos</span><strong><span data-products-usage>—</span></strong></div><div class="quota-bar"><i style="width:15%"></i></div></div>
+          <div class="quota-item"><div><span>Acessos ativos</span><strong><span data-members-usage>—</span></strong></div><div class="quota-bar"><i style="width:40%"></i></div></div>
+          <div class="quota-item"><div><span>Fotos por OS</span><strong><span data-photo-limit>—</span></strong></div><div class="quota-rule">Limite aplicado por ordem de serviço</div></div>
         </div>
         <a class="btn btn-secondary" href="condicoes-planos.html">Ver condições do plano</a>
       </section>
       <section class="account-card account-wide" id="empresa">
         <div class="account-card-head"><div><span class="card-kicker">Empresa</span><h3>Dados da organização</h3></div><span class="prototype-pill">Demonstração</span></div>
         <div class="company-summary">
-          <div><small>Empresa</small><strong>Minha Assistência</strong></div>
+          <div><small>Empresa</small><strong data-company-name>—</strong></div>
           <div><small>Perfil</small><strong>Proprietário / OWNER</strong></div>
-          <div><small>Acesso</small><strong>Mesmo login do aplicativo</strong></div>
+          <div><small>Acesso</small><strong data-account-email>Mesmo login do aplicativo</strong></div>
         </div>
       </section>
       <section class="account-card account-wide" id="seguranca-conta">
@@ -87,14 +87,16 @@
   <div class="modal-card cancel-modal-card">
     <div class="modal-head"><h3 id="cancel-title">Cancelar assinatura?</h3><button class="modal-close" type="button" data-cancel-close aria-label="Fechar">×</button></div>
     <p>Durante o teste grátis, a proposta é permitir cancelamento antes da primeira cobrança diretamente pelo portal do proprietário.</p>
-    <div class="dev-note">Este é um protótipo. Nenhuma assinatura real será cancelada agora.</div>
-    <div class="cancel-actions"><button class="btn btn-secondary" type="button" data-cancel-close>Manter assinatura</button><button class="btn btn-danger" type="button" data-cancel-demo>Confirmar cancelamento (protótipo)</button></div>
+    <div class="dev-note">Durante o teste grátis, o cancelamento é registrado no backend. Assinaturas externas exigirão confirmação do provedor.</div>
+    <div class="cancel-actions"><button class="btn btn-secondary" type="button" data-cancel-close>Manter assinatura</button><button class="btn btn-danger" type="button" data-cancel-confirm>Confirmar cancelamento</button></div>
   </div>
 </div>
 <div class="toast" data-account-toast></div>
 <a class="support-float" href="https://wa.me/5541987902852?text=Ol%C3%A1%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20o%20Nexo%20Assist." target="_blank" rel="noopener" aria-label="Tirar dúvidas pelo WhatsApp">
   <span class="support-status" aria-hidden="true"></span><span class="support-copy"><strong>Tire dúvidas</strong><small>Falar no WhatsApp</small></span>
 </a>
+<script src="assets/js/runtime-config.js"></script>
+<script src="assets/js/nexo-api.js"></script>
 <script src="assets/js/conta.js"></script>
 </body>
 </html>
