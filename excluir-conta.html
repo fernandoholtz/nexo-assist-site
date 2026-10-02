@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Como solicitar a exclusão da conta Nexo Assist.">
+  <meta name="description" content="Solicite a exclusão da sua conta Nexo Assist.">
   <title>Excluir conta | Nexo Assist</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -14,35 +14,62 @@
     <div class="nav-actions"><a class="btn btn-secondary" href="privacidade.html">Privacidade</a></div>
   </div>
 </header>
+
 <main>
   <section class="page-hero">
     <div class="container">
       <span class="eyebrow">Controle dos seus dados</span>
       <h1>Solicitar exclusão da conta</h1>
-      <p>Usuários do Nexo Assist podem pedir a exclusão da conta dentro do aplicativo. Durante o piloto, também aceitamos o pedido por este canal externo.</p>
+      <p>Você pode iniciar o pedido pelo aplicativo ou por esta página. O pedido é registrado no backend e tratado conforme a Política de Privacidade e as obrigações de retenção aplicáveis.</p>
     </div>
   </section>
+
   <section class="section compact">
     <div class="container legal-content">
-      <h2>Dentro do aplicativo</h2>
-      <p>Acesse <strong>Mais → Solicitar exclusão da conta</strong>. O aplicativo apresenta dupla confirmação e registra o pedido no backend com a identidade autenticada.</p>
+      <div data-signed-out>
+        <h2>Entre com a mesma conta do aplicativo</h2>
+        <p>Para evitar que outra pessoa peça a exclusão em seu nome, é necessário autenticar a conta antes de registrar a solicitação.</p>
+        <a class="btn btn-primary" href="login.html?next=excluir-conta.html">Entrar para solicitar exclusão</a>
+      </div>
 
-      <h2>Fora do aplicativo</h2>
-      <p>Se você não consegue mais acessar o aplicativo, use o atendimento abaixo para pedir a exclusão. Será necessário confirmar a identidade da conta antes do processamento.</p>
-      <p><a class="btn btn-danger" href="https://wa.me/5541987902852?text=Ol%C3%A1%2C%20quero%20solicitar%20a%20exclus%C3%A3o%20da%20minha%20conta%20Nexo%20Assist." target="_blank" rel="noopener">Solicitar exclusão pelo atendimento</a></p>
+      <div data-signed-in hidden>
+        <h2>Conta autenticada</h2>
+        <p>Conta: <strong data-account-email>—</strong></p>
 
-      <h2>Dados que podem precisar ser preservados</h2>
-      <p>Alguns registros podem precisar ser mantidos por obrigação legal, segurança, auditoria, continuidade de registros empresariais ou defesa de direitos. Nesses casos, a retenção deve ficar limitada ao necessário, conforme a Política de Privacidade.</p>
+        <div class="legal-note">
+          <strong>Importante:</strong> o pedido de exclusão não significa que todos os registros empresariais são apagados instantaneamente. Alguns dados podem precisar ser preservados por obrigação legal, segurança, auditoria ou defesa de direitos. Quando a pessoa é OWNER, o encerramento também pode afetar a organização e a assinatura.
+        </div>
 
-      <div class="legal-note"><strong>Piloto:</strong> o processamento final ainda possui etapa operacional controlada. A solicitação não significa exclusão instantânea de todos os registros.</div>
+        <div data-request-status class="plan-footnotes" hidden></div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
+          <button class="btn btn-danger" type="button" data-delete-request>Solicitar exclusão da conta</button>
+          <button class="btn btn-secondary" type="button" data-delete-cancel hidden>Cancelar pedido ainda não processado</button>
+          <a class="btn btn-secondary" href="#" data-logout>Sair</a>
+        </div>
+      </div>
+
+      <h2>O que acontece depois</h2>
+      <p>O pedido fica registrado com a identidade autenticada. A remoção final da conta Firebase e o tratamento dos dados associados seguem o processo operacional de privacidade. Dados que devam ser mantidos por motivo legítimo serão limitados ao necessário e descritos na Política de Privacidade.</p>
+
+      <h2>Alternativa pelo aplicativo</h2>
+      <p>No Nexo Assist, acesse <strong>Mais → Solicitar exclusão da conta</strong>. O aplicativo apresenta dupla confirmação antes de registrar o pedido.</p>
     </div>
   </section>
 </main>
+
 <footer class="site-footer">
-  <div class="container"><div class="footer-bottom">
-    <span>© 2026 Nexo Assist.</span>
-    <span><a href="privacidade.html">Privacidade</a> · <a href="termos.html">Termos</a></span>
-  </div></div>
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 Nexo Assist.</span>
+      <span><a href="privacidade.html">Política de Privacidade</a> · <a href="termos.html">Termos de Uso</a></span>
+    </div>
+  </div>
 </footer>
+
+<div class="toast" data-toast></div>
+<script src="assets/js/runtime-config.js"></script>
+<script src="assets/js/nexo-api.js"></script>
+<script src="assets/js/excluir-conta.js"></script>
 </body>
 </html>
