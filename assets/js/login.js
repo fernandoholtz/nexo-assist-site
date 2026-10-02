@@ -46,10 +46,16 @@ reset?.addEventListener("click",async event=>{
     return;
   }
 
+  const genericMessage="Se existir uma conta com esse e-mail, as instruções de redefinição serão enviadas.";
   try{
     await window.NexoApi.sendPasswordReset(email);
-    toastMessage("Enviamos as instruções de redefinição de senha.");
+    toastMessage(genericMessage);
   }catch(error){
+    const code=String(error?.code||"");
+    if(code==="EMAIL_NOT_FOUND"||code==="USER_DISABLED"){
+      toastMessage(genericMessage);
+      return;
+    }
     toastMessage(error instanceof Error?error.message:"Não foi possível enviar a redefinição.");
   }
 });
