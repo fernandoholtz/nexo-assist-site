@@ -165,7 +165,12 @@
 
       addDataRow(detail,"Status",org.active?"Ativa":"Suspensa");
       addDataRow(detail,"Plano",plan.name||org.plan_code||"—");
-      addDataRow(detail,"Unidades",branches.filter(branch=>branch.active).length+" de "+String(sub.contracted_branches||1));
+      const contracted=Number(sub.contracted_branches||1);
+      const included=Number(plan.included_branches||1);
+      const addon=Number(sub.branch_addon_price_cents_snapshot ?? plan.additional_branch_price_cents ?? 0);
+      const estimated=Number(plan.monthly_price_cents||0)+Math.max(contracted-included,0)*addon;
+      addDataRow(detail,"Mensalidade estimada",money(estimated));
+      addDataRow(detail,"Unidades",branches.filter(branch=>branch.active).length+" de "+String(contracted));
       addDataRow(detail,"Usuários ativos",usage.members_active||0);
       addDataRow(detail,"Produtos ativos",usage.products_active||0);
       addDataRow(detail,"OS",usage.service_orders||0);
@@ -192,11 +197,45 @@
       field.append(label,input);
       detail.append(field);
 
+      const planControl=el("div","field");
+      planControl.append(el("label","","Plano da empresa"));
+      const planSelect=el("select");
+      (dashboard?.plans||[]).forEach(option=>{
+        const node=el("option","",option.name||option.code);
+        node.value=String(option.code||"");
+        node.selected=String(option.code||"")===String(org.plan_code||"");
+        planSelect.append(node);
+      });
+      planControl.append(planSelect);
+      detail.append(planControl);
+
       const actions=el("div","admin-actions");
+      const planButton=el("button","btn btn-secondary","Salvar plano");
+      planButton.type="button";
       const saveButton=el("button","btn btn-secondary","Salvar limite");
       saveButton.type="button";
       const toggleButton=el("button",org.active?"btn btn-danger":"btn btn-primary",org.active?"Suspender empresa":"Reativar empresa");
       toggleButton.type="button";
+
+      planButton.addEventListener("click",async()=>{
+        const nextPlan=String(planSelect.value||"");
+        if(!nextPlan||nextPlan===String(org.plan_code||"")){
+          showToast("Selecione um plano diferente para alterar.");
+          return;
+        }
+
+        const reason=window.prompt("Motivo da alteração do plano:");
+        if(!reason)return;
+
+        try{
+          await window.NexoApi.platformSetOrganizationPlan(id,nextPlan,reason);
+          showToast("Plano atualizado e registrado na auditoria.");
+          await loadDashboard();
+          await openOrganization(id);
+        }catch(error){
+          showToast(error instanceof Error?error.message:"Não foi possível alterar o plano.");
+        }
+      });
 
       saveButton.addEventListener("click",async()=>{
         const count=Number(input.value||1);
@@ -227,7 +266,7 @@
         }
       });
 
-      actions.append(saveButton,toggleButton);
+      actions.append(planButton,saveButton,toggleButton);
       detail.append(actions);
     }catch(error){
       clear(detail);
