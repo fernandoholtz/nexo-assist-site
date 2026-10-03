@@ -360,6 +360,19 @@
     );
   }
 
+  async function platformSetOrganizationPlan(organizationId, planCode, reason) {
+    const session = await getSession();
+    return rpc(
+      "platform_set_organization_plan",
+      {
+        target_organization_id: organizationId,
+        target_plan_code: String(planCode || "").trim(),
+        target_reason: String(reason || "").trim(),
+      },
+      session.idToken,
+    );
+  }
+
   async function platformUpdateBranchPricing(planCode, cents, reason) {
     const session = await getSession();
     return rpc(
@@ -407,6 +420,7 @@
     getPlatformOrganizationDetail,
     platformSetOrganizationActive,
     platformSetContractedBranches,
+    platformSetOrganizationPlan,
     platformUpdateBranchPricing,
   };
 })();
