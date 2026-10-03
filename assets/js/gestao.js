@@ -41,6 +41,19 @@
     parent.append(row);
   }
 
+  function buildField(label,value,options={}){
+    const wrap=el("div","field");
+    const labelNode=el("label","",label);
+    const input=el(options.multiline?"textarea":"input");
+    if(!options.multiline)input.type=options.type||"text";
+    input.value=String(value??"");
+    if(options.placeholder)input.placeholder=options.placeholder;
+    if(options.required)input.required=true;
+    if(options.maxLength)input.maxLength=options.maxLength;
+    wrap.append(labelNode,input);
+    return {wrap,input};
+  }
+
   function renderMetrics(summary={}){
     clear(metrics);
     const cards=[
@@ -155,6 +168,7 @@
       const sub=data?.subscription||{};
       const plan=data?.plan||{};
       const usage=data?.usage||{};
+      const profile=data?.profile||null;
       const branches=Array.isArray(data?.branches)?data.branches:[];
 
       clear(detail);
@@ -176,14 +190,139 @@
       addDataRow(detail,"OS",usage.service_orders||0);
       addDataRow(detail,"Vendas",usage.sales||0);
 
+      const companyEditor=el("details","admin-editor");
+      companyEditor.append(el("summary","","Editar dados da empresa"));
+      const companyForm=el("form","admin-edit-form");
+      const companyName=buildField("Nome comercial",org.name||"",{required:true,maxLength:120});
+      companyForm.append(companyName.wrap);
+
+      const profileFields={};
+      if(profile){
+        const definitions=[
+          ["legal_name","Razão social",profile.legal_name||"",{}],
+          ["cnpj","CNPJ",profile.cnpj||"",{}],
+          ["phone","Telefone",profile.phone||"",{required:true}],
+          ["commercial_email","E-mail comercial",profile.commercial_email||"",{type:"email",required:true}],
+          ["postal_code","CEP",profile.postal_code||"",{required:true}],
+          ["street","Rua / avenida",profile.street||"",{required:true}],
+          ["street_number","Número",profile.street_number||"",{required:true}],
+          ["complement","Complemento",profile.complement||"",{}],
+          ["neighborhood","Bairro",profile.neighborhood||"",{required:true}],
+          ["city","Cidade",profile.city||"",{required:true}],
+          ["state","UF",profile.state||"",{required:true,maxLength:2}],
+          ["segment","Segmento",profile.segment||"",{required:true}],
+          ["responsible_name","Responsável",profile.responsible_name||"",{required:true}],
+          ["responsible_role","Cargo do responsável",profile.responsible_role||"",{required:true}],
+          ["responsible_phone","Telefone do responsável",profile.responsible_phone||"",{required:true}],
+          ["manager_name","Gestor",profile.manager_name||"",{}],
+          ["manager_phone","Telefone do gestor",profile.manager_phone||"",{}],
+          ["manager_email","E-mail do gestor",profile.manager_email||"",{type:"email"}],
+        ];
+
+        const grid=el("div","admin-edit-grid");
+        definitions.forEach(([key,label,value,options])=>{
+          const field=buildField(label,value,options);
+          profileFields[key]=field.input;
+          grid.append(field.wrap);
+        });
+        companyForm.append(grid);
+      }else{
+        companyForm.append(
+          el(
+            "p",
+            "admin-warning",
+            "Esta organização de teste é anterior ao cadastro comercial formal. O painel permite alterar o nome, mas não cria aceite contratual retroativo."
+          )
+        );
+      }
+
+      const companySave=el("button","btn btn-secondary","Salvar dados da empresa");
+      companySave.type="submit";
+      companyForm.append(companySave);
+      companyEditor.append(companyForm);
+      detail.append(companyEditor);
+
+      companyForm.addEventListener("submit",async event=>{
+        event.preventDefault();
+        const reason=window.prompt("Motivo da alteração dos dados da empresa:");
+        if(!reason)return;
+
+        const payload={company_name:String(companyName.input.value||"").trim()};
+        Object.entries(profileFields).forEach(([key,inputNode])=>{
+          payload[key]=String(inputNode.value||"").trim();
+        });
+
+        try{
+          await window.NexoApi.platformUpdateOrganizationAdminData(id,payload,reason);
+          showToast("Dados da empresa atualizados e auditados.");
+          await loadDashboard();
+          await openOrganization(id);
+        }catch(error){
+          showToast(error instanceof Error?error.message:"Não foi possível atualizar a empresa.");
+        }
+      });
+
+      const branchesTitle=el("h4","admin-subtitle","Filiais e unidades");
+      detail.append(branchesTitle);
+
       const branchesBox=el("div","admin-branches");
       branches.forEach(branch=>{
-        const row=el("div");
-        row.append(
+        const editor=el("details","admin-branch-editor");
+        const summary=el("summary");
+        const summaryCopy=el("span");
+        summaryCopy.append(
           el("strong","",(branch.name||"Unidade")+(branch.is_primary?" • Matriz":"")),
           el("small","",[branch.city,branch.state].filter(Boolean).join(" / ")||"Endereço não informado")
         );
-        branchesBox.append(row);
+        summary.append(summaryCopy,el("b","",branch.active?"Ativa":"Inativa"));
+        editor.append(summary);
+
+        const form=el("form","admin-edit-form");
+        const defs=[
+          ["name","Nome da unidade",branch.name||"",{required:true}],
+          ["postal_code","CEP",branch.postal_code||"",{}],
+          ["street","Rua / avenida",branch.street||"",{}],
+          ["street_number","Número",branch.street_number||"",{}],
+          ["complement","Complemento",branch.complement||"",{}],
+          ["neighborhood","Bairro",branch.neighborhood||"",{}],
+          ["city","Cidade",branch.city||"",{}],
+          ["state","UF",branch.state||"",{maxLength:2}],
+          ["phone","Telefone",branch.phone||"",{}],
+          ["email","E-mail",branch.email||"",{type:"email"}],
+        ];
+        const inputs={};
+        const grid=el("div","admin-edit-grid");
+        defs.forEach(([key,label,value,options])=>{
+          const field=buildField(label,value,options);
+          inputs[key]=field.input;
+          grid.append(field.wrap);
+        });
+        form.append(grid);
+        const save=el("button","btn btn-secondary","Salvar filial");
+        save.type="submit";
+        form.append(save);
+
+        form.addEventListener("submit",async event=>{
+          event.preventDefault();
+          const reason=window.prompt("Motivo da alteração desta filial:");
+          if(!reason)return;
+
+          const payload={};
+          Object.entries(inputs).forEach(([key,inputNode])=>{
+            payload[key]=String(inputNode.value||"").trim();
+          });
+
+          try{
+            await window.NexoApi.platformUpdateBranchData(id,branch.id,payload,reason);
+            showToast("Dados da filial atualizados e auditados.");
+            await openOrganization(id);
+          }catch(error){
+            showToast(error instanceof Error?error.message:"Não foi possível atualizar a filial.");
+          }
+        });
+
+        editor.append(form);
+        branchesBox.append(editor);
       });
       detail.append(branchesBox);
 

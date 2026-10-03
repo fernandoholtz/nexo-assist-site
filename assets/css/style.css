@@ -778,3 +778,22 @@ img,video{max-width:100%;display:block}
 .branch-price-summary{min-height:72px;border:1px solid #e3e6ee;border-radius:14px;background:#fafbfe;padding:13px 14px;display:flex;flex-direction:column;justify-content:center}
 .branch-price-summary strong{font-size:19px;color:#172033}
 .branch-price-summary small{margin-top:4px;color:#687286;line-height:1.4}
+
+
+/* Platform admin editing */
+.admin-editor,.admin-branch-editor{border:1px solid #e6e8ef;border-radius:14px;background:#fafbfe;margin-top:14px;overflow:hidden}
+.admin-editor>summary,.admin-branch-editor>summary{cursor:pointer;list-style:none;padding:13px 14px;font-weight:900;color:#172033;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.admin-editor>summary::-webkit-details-marker,.admin-branch-editor>summary::-webkit-details-marker{display:none}
+.admin-editor>summary::after,.admin-branch-editor>summary::after{content:"+";font-size:20px;color:#687286}
+.admin-editor[open]>summary::after,.admin-branch-editor[open]>summary::after{content:"−"}
+.admin-edit-form{padding:14px;border-top:1px solid #e6e8ef;background:#fff}
+.admin-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.admin-edit-grid .field{margin:0}
+.admin-edit-form>.btn{margin-top:12px}
+.admin-warning{margin:4px 0 10px;padding:12px 14px;border-radius:12px;background:#fff6d9;border:1px solid #f0d78a;color:#6d5714;font-size:12px;line-height:1.5}
+.admin-subtitle{margin:20px 0 8px;font-size:14px;color:#172033}
+.admin-branch-editor{background:#fff}
+.admin-branch-editor>summary span{display:flex;flex-direction:column;gap:3px}
+.admin-branch-editor>summary small{color:#737d90;font-weight:500}
+.admin-branch-editor>summary b{font-size:11px;color:#0b7a53}
+@media(max-width:700px){.admin-edit-grid{grid-template-columns:1fr}}

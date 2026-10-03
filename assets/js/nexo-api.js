@@ -386,6 +386,33 @@
     );
   }
 
+  async function platformUpdateOrganizationAdminData(organizationId, data, reason) {
+    const session = await getSession();
+    return rpc(
+      "platform_update_organization_admin_data",
+      {
+        target_organization_id: organizationId,
+        target_data: data && typeof data === "object" ? data : {},
+        target_reason: String(reason || "").trim(),
+      },
+      session.idToken,
+    );
+  }
+
+  async function platformUpdateBranchData(organizationId, branchId, data, reason) {
+    const session = await getSession();
+    return rpc(
+      "platform_update_branch_data",
+      {
+        target_organization_id: organizationId,
+        target_branch_id: branchId,
+        target_data: data && typeof data === "object" ? data : {},
+        target_reason: String(reason || "").trim(),
+      },
+      session.idToken,
+    );
+  }
+
   function signOut() {
     clearSession();
   }
@@ -422,5 +449,7 @@
     platformSetContractedBranches,
     platformSetOrganizationPlan,
     platformUpdateBranchPricing,
+    platformUpdateOrganizationAdminData,
+    platformUpdateBranchData,
   };
 })();
