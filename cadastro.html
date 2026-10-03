@@ -93,6 +93,22 @@
           <label><input type="radio" name="plano" value="gestao" required><strong>Gestão</strong><span>14 dias grátis • R$ 299/mês • 25 acessos • 10.000 produtos • 20 GB</span></label>
         </div>
         <div style="height:18px"></div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="quantidadeUnidades">Quantidade de unidades / lojas *</label>
+            <input id="quantidadeUnidades" name="quantidadeUnidades" type="number" min="1" max="10" value="1" required>
+            <small>1 unidade está incluída. De 2 a 10 unidades, o valor adicional é calculado conforme o plano. Acima de 10, solicite proposta personalizada.</small>
+          </div>
+          <div class="field">
+            <label>Estimativa mensal</label>
+            <div class="branch-price-summary">
+              <strong data-branch-price-total>Calculando...</strong>
+              <small data-branch-price-copy>Sem cobrança durante o piloto.</small>
+            </div>
+          </div>
+        </div>
+        <div class="dev-note">Os valores de filiais adicionais são uma simulação comercial configurável durante o piloto e ainda não representam preço definitivo de lançamento.</div>
+        <div style="height:18px"></div>
         <label class="checkbox"><input id="aceiteCondicoesPlano" type="checkbox" required> <span>Li as <a href="condicoes-planos.html" target="_blank" rel="noopener">condições e limites do plano</a>. Os Termos de Uso e a Política de Privacidade definitivos serão apresentados antes do lançamento comercial.</span></label>
         <div style="height:12px"></div>
         <label class="checkbox"><input id="declaracaoVerdade" type="checkbox" required> <span>Confirmo que sou responsável por fornecer informações verdadeiras sobre a empresa.</span></label>
