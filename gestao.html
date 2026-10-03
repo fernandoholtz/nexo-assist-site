@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://vjynwgktulgwmgodluhp.supabase.co; form-action 'self'; upgrade-insecure-requests">
+  <title>Gestão da plataforma | Nexo Assist</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="admin-page">
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="index.html"><span class="brand-mark"></span><strong>Nexo Assist</strong></a>
+    <div class="nav-actions"><a class="btn btn-secondary" href="index.html">Site público</a><button class="btn btn-secondary" type="button" data-admin-logout hidden>Sair</button></div>
+  </div>
+</header>
+
+<main class="section compact">
+  <div class="container">
+    <section class="admin-login" data-admin-login>
+      <span class="eyebrow">Administração da plataforma</span>
+      <h1>Painel de gestão Nexo Assist</h1>
+      <p>Área restrita ao administrador da plataforma. Este acesso é separado dos perfis OWNER das empresas.</p>
+      <form class="form-card admin-login-card" data-admin-login-form>
+        <div class="field"><label for="adminEmail">E-mail</label><input id="adminEmail" type="email" autocomplete="username" required></div>
+        <div class="field"><label for="adminPassword">Senha</label><div class="password-wrap"><input id="adminPassword" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" data-password-toggle="adminPassword" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div></div>
+        <button class="btn btn-primary" type="submit" data-admin-login-button>Entrar no painel</button>
+      </form>
+    </section>
+
+    <section data-admin-app hidden>
+      <div class="admin-heading">
+        <div><span class="eyebrow">Administração da plataforma</span><h1>Gestão Nexo Assist</h1><p>Empresas, filiais, planos e status operacional.</p></div>
+        <button class="btn btn-secondary" type="button" data-admin-refresh>Atualizar</button>
+      </div>
+
+      <div class="admin-metrics" data-admin-metrics></div>
+
+      <div class="admin-layout">
+        <section class="account-card admin-companies">
+          <div class="account-card-head"><div><span class="card-kicker">Empresas</span><h3>Organizações cadastradas</h3></div></div>
+          <div class="field"><label for="adminSearch">Pesquisar</label><input id="adminSearch" type="search" placeholder="Nome, plano ou ambiente"></div>
+          <div data-admin-companies-list></div>
+        </section>
+
+        <section class="account-card admin-detail" data-admin-detail>
+          <span class="card-kicker">Detalhes</span>
+          <h3>Selecione uma empresa</h3>
+          <p class="account-copy">Abra uma organização para ver unidades, plano, uso e controles administrativos.</p>
+        </section>
+      </div>
+
+      <section class="account-card account-wide">
+        <div class="account-card-head"><div><span class="card-kicker">Preços de filiais</span><h3>Simulação comercial do piloto</h3></div><span class="prototype-pill">Sem cobrança real</span></div>
+        <p class="account-copy">A assinatura base inclui 1 unidade. Os valores adicionais abaixo são configuráveis e ainda não representam preço comercial definitivo.</p>
+        <div data-admin-plans></div>
+      </section>
+    </section>
+  </div>
+</main>
+
+<div class="toast" data-admin-toast></div>
+<script src="assets/js/runtime-config.js"></script>
+<script src="assets/js/nexo-api.js"></script>
+<script src="assets/js/auth-ui.js"></script>
+<script src="assets/js/gestao.js"></script>
+</body>
+</html>
