@@ -8,6 +8,7 @@ if(form){
   const toast=document.querySelector("[data-toast]");
   let current=0;
   let submitting=false;
+  let planCatalog=[];
 
   function showToast(message){
     if(!toast)return;
@@ -77,6 +78,7 @@ if(form){
       target_plan_code:selectedPlan,
       target_plan_conditions_accepted:Boolean(form.querySelector("#aceiteCondicoesPlano")?.checked),
       target_truth_declaration_accepted:Boolean(form.querySelector("#declaracaoVerdade")?.checked),
+      target_branch_count:Math.max(1,Math.min(10,Number(value("quantidadeUnidades"))||1)),
     };
   }
 
@@ -113,7 +115,7 @@ if(form){
     button.textContent="Verificando...";
 
     try{
-      const result=await window.NexoApi.bootstrapCompany(draft);
+      const result=await window.NexoApi.bootstrapCompanyWithBranches(draft);
       sessionStorage.removeItem(DRAFT_KEY);
       sessionStorage.setItem("nexo_onboarding_result",JSON.stringify(Array.isArray(result)?result[0]:result));
       showToast("Empresa criada e registrada. Seu período de 14 dias começou.");
@@ -132,6 +134,50 @@ if(form){
   form.querySelectorAll("[data-prev]").forEach(button=>{
     button.addEventListener("click",()=>showStep(current-1));
   });
+
+
+  function formatMoney(cents){
+    return (Number(cents||0)/100).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  }
+
+  function updateBranchPrice(){
+    const selected=form.querySelector('input[name="plano"]:checked')?.value||"profissional";
+    const units=Math.max(1,Math.min(10,Number(value("quantidadeUnidades"))||1));
+    const plan=planCatalog.find(item=>item.code===selected);
+    const totalNode=document.querySelector("[data-branch-price-total]");
+    const copyNode=document.querySelector("[data-branch-price-copy]");
+    if(!totalNode||!copyNode)return;
+
+    if(!plan){
+      totalNode.textContent="Simulação indisponível";
+      copyNode.textContent=units+" unidade(s) informada(s).";
+      return;
+    }
+
+    const included=Number(plan.included_branches||1);
+    const addon=Number(plan.additional_branch_price_cents||0);
+    const base=Number(plan.monthly_price_cents||0);
+    const extras=Math.max(0,units-included);
+    const total=base+(extras*addon);
+    totalNode.textContent=formatMoney(total)+"/mês";
+    copyNode.textContent=units+" unidade(s) • base "+formatMoney(base)+" + "+extras+" adicional(is) de "+formatMoney(addon)+".";
+  }
+
+  async function loadPlanCatalog(){
+    try{
+      const result=await window.NexoApi.getPublicPlanCatalog();
+      planCatalog=Array.isArray(result)?result:[];
+      updateBranchPrice();
+    }catch{
+      planCatalog=[];
+      updateBranchPrice();
+    }
+  }
+
+  form.querySelectorAll('input[name="plano"]').forEach(input=>input.addEventListener("change",updateBranchPrice));
+  form.querySelector("#quantidadeUnidades")?.addEventListener("input",updateBranchPrice);
+  void loadPlanCatalog();
+
 
   const selectedPlan=localStorage.getItem("nexo_plan");
   if(selectedPlan){
