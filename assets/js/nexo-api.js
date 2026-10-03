@@ -217,6 +217,25 @@
     return rpc(name, args, null);
   }
 
+  async function getPublicPlanCatalog() {
+    return rpcPublic("get_public_plan_catalog", {});
+  }
+
+  async function bootstrapCompanyWithBranches(payload) {
+    const session = await getSession({ forceRefresh: true });
+    const account = await lookup(session.idToken);
+    if (!account?.emailVerified) {
+      throw new Error("Confirme seu e-mail antes de ativar a empresa.");
+    }
+
+    const verifiedSession = await refreshSession(session);
+    return rpc(
+      "bootstrap_saas_owner_with_branches",
+      payload,
+      verifiedSession.idToken,
+    );
+  }
+
   async function bootstrapCompany(payload) {
     const session = await getSession({ forceRefresh: true });
     const account = await lookup(session.idToken);
@@ -228,6 +247,15 @@
     // para que a claim email_verified chegue ao Supabase.
     const verifiedSession = await refreshSession(session);
     return rpc("bootstrap_saas_owner", payload, verifiedSession.idToken);
+  }
+
+  async function getBranchEntitlement(organizationId) {
+    const session = await getSession();
+    return rpc(
+      "get_branch_entitlement",
+      { target_organization_id: organizationId },
+      session.idToken,
+    );
   }
 
   async function getOwnerPortalSnapshot() {
@@ -292,6 +320,59 @@
     return Array.isArray(payload) && payload[0] ? payload[0] : null;
   }
 
+  async function getPlatformAdminDashboard() {
+    const session = await getSession();
+    return rpc("get_platform_admin_dashboard", {}, session.idToken);
+  }
+
+  async function getPlatformOrganizationDetail(organizationId) {
+    const session = await getSession();
+    return rpc(
+      "get_platform_organization_detail",
+      { target_organization_id: organizationId },
+      session.idToken,
+    );
+  }
+
+  async function platformSetOrganizationActive(organizationId, active, reason) {
+    const session = await getSession();
+    return rpc(
+      "platform_set_organization_active",
+      {
+        target_organization_id: organizationId,
+        target_active: Boolean(active),
+        target_reason: String(reason || "").trim(),
+      },
+      session.idToken,
+    );
+  }
+
+  async function platformSetContractedBranches(organizationId, count, reason) {
+    const session = await getSession();
+    return rpc(
+      "platform_set_contracted_branches",
+      {
+        target_organization_id: organizationId,
+        target_contracted_branches: Number(count),
+        target_reason: String(reason || "").trim(),
+      },
+      session.idToken,
+    );
+  }
+
+  async function platformUpdateBranchPricing(planCode, cents, reason) {
+    const session = await getSession();
+    return rpc(
+      "platform_update_branch_pricing",
+      {
+        target_plan_code: planCode,
+        target_additional_branch_price_cents: Number(cents),
+        target_reason: String(reason || "").trim(),
+      },
+      session.idToken,
+    );
+  }
+
   function signOut() {
     clearSession();
   }
@@ -312,6 +393,9 @@
     rpc,
     rpcPublic,
     bootstrapCompany,
+    bootstrapCompanyWithBranches,
+    getPublicPlanCatalog,
+    getBranchEntitlement,
     getOwnerPortalSnapshot,
     cancelTrialSubscription,
     reactivateTrialSubscription,
@@ -319,5 +403,10 @@
     requestAccountDeletion,
     cancelAccountDeletionRequest,
     getAccountDeletionRequests,
+    getPlatformAdminDashboard,
+    getPlatformOrganizationDetail,
+    platformSetOrganizationActive,
+    platformSetContractedBranches,
+    platformUpdateBranchPricing,
   };
 })();
