@@ -25,6 +25,19 @@ function bar(selector,used,limit){
 function statusLabel(status){
   return {trialing:"Teste grátis",active:"Ativa",past_due:"Pagamento pendente",canceled:"Cancelada",expired:"Expirada"}[status]||status||"—";
 }
+function renderBranches(entitlement){
+  const row=Array.isArray(entitlement)?entitlement[0]:entitlement;
+  if(!row)return;
+  text("[data-branches-usage]",String(row.active_branches||0)+" de "+String(row.contracted_branches||0));
+  text("[data-branch-monthly-price]",money(row.estimated_monthly_price_cents));
+  const barNode=document.querySelector("[data-branches-bar]");
+  if(barNode){
+    const used=Number(row.active_branches||0);
+    const limit=Math.max(1,Number(row.contracted_branches||1));
+    barNode.style.width=Math.min(100,Math.max(0,(used/limit)*100))+"%";
+  }
+}
+
 function render(data,session){
   snapshot=data;
   const usage=data.usage||{};
@@ -55,6 +68,14 @@ async function load(){
     const session=await window.NexoApi.getSession();
     const data=await window.NexoApi.getOwnerPortalSnapshot();
     render(data,session);
+    const organizationId=data?.organization?.id;
+    if(organizationId){
+      try{
+        renderBranches(await window.NexoApi.getBranchEntitlement(organizationId));
+      }catch(error){
+        text("[data-branches-usage]","Não disponível");
+      }
+    }
   }catch(error){
     window.NexoApi.clearSession();
     window.location.href="login.html";
