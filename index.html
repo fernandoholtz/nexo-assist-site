@@ -36,7 +36,7 @@
       <div class="hero-copy">
         <span class="eyebrow">Gestão para assistência técnica</span>
         <h1>Da entrada do equipamento à entrega, <span>tudo conectado.</span></h1>
-        <p>Organize ordens de serviço, clientes, estoque, vendas e equipe em um sistema único, com acessos individuais e informações separadas por empresa.</p>
+        <p>Organize ordens de serviço, clientes, estoque, vendas e equipe em um sistema único, com acessos individuais e operação separada por empresa e por unidade.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="cadastro.html">Testar 14 dias grátis</a>
           <a class="btn btn-secondary" href="#demonstracao">Ver o sistema em ação</a>
@@ -251,7 +251,7 @@
       </div>
       <div class="steps">
         <article class="step"><h3>Cadastre a empresa</h3><p>Informe dados comerciais, endereço e responsável principal.</p></article>
-        <article class="step"><h3>Escolha o plano</h3><p>Selecione os recursos e limites adequados à operação.</p></article>
+        <article class="step"><h3>Escolha o plano e as unidades</h3><p>Selecione os recursos e informe quantas lojas, matrizes ou filiais farão parte da operação.</p></article>
         <article class="step"><h3>Ative o acesso</h3><p>Após a confirmação prevista no fluxo comercial, o responsável recebe o acesso de proprietário.</p></article>
         <article class="step"><h3>Configure a equipe</h3><p>Crie usuários e libere somente as permissões necessárias para cada função.</p></article>
       </div>
@@ -263,7 +263,7 @@
       <div class="section-head center">
         <span class="eyebrow">Planos iniciais</span>
         <h2>Comece no tamanho da sua assistência.</h2>
-        <p>Os valores e limites abaixo representam a proposta comercial futura. Durante o piloto gratuito, nenhuma cobrança é realizada e a quantidade de empresas permanece controlada para respeitar a infraestrutura sem custo.</p>
+        <p>Os valores e limites abaixo representam a proposta comercial futura. Cada assinatura inclui 1 unidade; filiais adicionais são calculadas separadamente conforme o plano. Durante o piloto gratuito, nenhuma cobrança é realizada.</p>
       </div>
       <div class="pricing-grid">
         <article class="card plan trace-border">
@@ -286,7 +286,7 @@
           <a class="btn btn-secondary" href="cadastro.html?plano=gestao" data-plan="gestao">Testar Gestão por 14 dias</a>
         </article>
       </div>
-      <div class="pricing-disclosure"><strong>* Ordens de serviço sem limite numérico mensal</strong><span>O uso continua sujeito ao limite de armazenamento do plano e às regras de uso aceitável. Fotos e documentos contam no armazenamento.</span><div><a class="btn btn-link" href="planos.html">Comparar todos os recursos →</a><a class="btn btn-link" href="condicoes-planos.html">Ver condições e limites →</a></div></div>
+      <div class="pricing-disclosure"><strong>1 unidade incluída em cada assinatura</strong><span>Filiais adicionais permanecem na mesma empresa, com operação separada por unidade, e acrescentam valor à mensalidade conforme o plano. Os valores atuais são simulações do piloto.</span><strong>* Ordens de serviço sem limite numérico mensal</strong><span>O uso continua sujeito ao limite de armazenamento do plano e às regras de uso aceitável. Fotos e documentos contam no armazenamento.</span><div><a class="btn btn-link" href="planos.html">Comparar todos os recursos →</a><a class="btn btn-link" href="condicoes-planos.html">Ver condições e limites →</a></div></div>
     </div>
   </section>
 
@@ -302,7 +302,7 @@
         <article class="benefit-card"><span>02</span><h3>Estoque conectado</h3><p>Entradas, saídas, vendas e peças usadas em serviços podem formar uma trilha de movimentação.</p></article>
         <article class="benefit-card"><span>03</span><h3>Equipe com acesso definido</h3><p>O proprietário controla quem pode acessar OS, vendas, estoque, valores e informações gerenciais.</p></article>
         <article class="benefit-card"><span>04</span><h3>Decisões com histórico</h3><p>Informações registradas permitem acompanhar o que aconteceu sem depender apenas de conversas ou memória.</p></article>
-        <article class="benefit-card"><span>05</span><h3>Estrutura para crescer</h3><p>A arquitetura multiempresa permite evoluir a operação sem criar uma aplicação diferente para cada cliente.</p></article>
+        <article class="benefit-card"><span>05</span><h3>Estrutura para crescer</h3><p>A arquitetura multiempresa e multifilial permite ampliar a operação sem criar uma aplicação diferente para cada loja.</p></article>
         <article class="benefit-card"><span>06</span><h3>Produto em evolução</h3><p>Aplicativo e site podem receber melhorias sem mudar a forma de trabalhar da sua equipe.</p></article>
       </div>
     </div>
@@ -320,7 +320,7 @@
         <div class="security-list security-list-v2">
           <div class="security-item"><strong>Acesso individual</strong><span>Cada pessoa entra com sua própria conta e não precisa compartilhar senha.</span></div>
           <div class="security-item"><strong>Dados separados por empresa</strong><span>Registros vinculados à organização para evitar mistura entre clientes do SaaS.</span></div>
-          <div class="security-item"><strong>Dados separados por empresa</strong><span>Informações de uma empresa não ficam visíveis para outra.</span></div>
+          <div class="security-item"><strong>Acesso por filial</strong><span>Funcionários operam apenas nas unidades liberadas pelo proprietário; a Matriz e as demais filiais permanecem isoladas pelo backend.</span></div>
           <div class="security-item"><strong>Permissões por função</strong><span>OWNER, administrador e funcionário podem ter responsabilidades diferentes.</span></div>
           <div class="security-item"><strong>Arquivos privados</strong><span>Fotos de OS e documentos usam armazenamento privado com acesso controlado.</span></div>
           <div class="security-item"><strong>Histórico de alterações</strong><span>Ações importantes podem ser registradas para conferência e rastreabilidade.</span></div>
@@ -336,6 +336,7 @@
         <details><summary>Preciso instalar um sistema em cada computador?</summary><p>O Nexo Assist trabalha com uma aplicação central e dados online. O aplicativo Android está em distribuição controlada de teste, conectado ao mesmo ambiente de dados da empresa.</p></details>
         <details><summary>Funcionários usam a mesma conta?</summary><p>Não. O modelo previsto é uma conta individual por pessoa, vinculada à empresa e às permissões definidas pelo proprietário.</p></details>
         <details><summary>Uma empresa consegue ver dados de outra?</summary><p>A arquitetura usa organização e políticas de acesso no banco para separar os dados de cada empresa.</p></details>
+        <details><summary>Posso usar a mesma assinatura em várias lojas?</summary><p>Sim, desde que as unidades estejam incluídas no contrato. A assinatura base inclui 1 unidade e as filiais adicionais são cadastradas na mesma empresa, com valor adicional conforme o plano.</p></details>
         <details><summary>O pagamento já está ativo neste protótipo?</summary><p>Não. O projeto está em piloto gratuito controlado. A cobrança comercial só será liberada quando houver infraestrutura compatível, validação jurídica e confirmação segura do provedor de pagamento.</p></details>
       </div>
     </div>
