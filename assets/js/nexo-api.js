@@ -609,6 +609,26 @@
     clearSession();
   }
 
+  function redirectAfterDailySessionExpiry() {
+    const page = String(window.location.pathname || "")
+      .split("/")
+      .filter(Boolean)
+      .pop() || "index.html";
+
+    if (page === "gestao.html") {
+      window.location.reload();
+      return;
+    }
+
+    if (["conta.html", "excluir-conta.html"].includes(page)) {
+      const target =
+        "login.html?next=" +
+        encodeURIComponent(page) +
+        "&motivo=sessao-diaria";
+      window.location.assign(target);
+    }
+  }
+
   setInterval(() => {
     const session = readSession();
     if (!session) return;
@@ -616,6 +636,7 @@
       assertCurrentSecurityDay(session);
     } catch {
       window.dispatchEvent(new CustomEvent("nexo:daily-session-expired"));
+      redirectAfterDailySessionExpiry();
     }
   }, 15000);
 
