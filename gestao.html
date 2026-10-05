@@ -25,7 +25,13 @@
       <form class="form-card admin-login-card" data-admin-login-form>
         <div class="field"><label for="adminEmail">E-mail</label><input id="adminEmail" type="email" autocomplete="username" required></div>
         <div class="field"><label for="adminPassword">Senha</label><div class="password-wrap"><input id="adminPassword" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" data-password-toggle="adminPassword" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div></div>
+        <div class="field" data-admin-mfa-field hidden>
+          <label for="adminMfaCode">Código do autenticador</label>
+          <input id="adminMfaCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000">
+          <small>Confirme o segundo fator cadastrado na sua conta administrativa.</small>
+        </div>
         <button class="btn btn-primary" type="submit" data-admin-login-button>Entrar no painel</button>
+        <button class="btn btn-secondary" type="button" data-admin-mfa-cancel hidden>Cancelar 2FA</button>
       </form>
     </section>
 
