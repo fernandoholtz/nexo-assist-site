@@ -1,5 +1,59 @@
 (() => {
   const SESSION_KEY = "nexo_web_session";
+  const SECURITY_TIME_ZONE = "America/Sao_Paulo";
+
+  function securityDateKey(date) {
+    try {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: SECURITY_TIME_ZONE,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).formatToParts(date);
+      const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+      return values.year + "-" + values.month + "-" + values.day;
+    } catch {
+      return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0"),
+      ].join("-");
+    }
+  }
+
+  function decodeJwtPayload(token) {
+    try {
+      const payload = String(token || "").split(".")[1];
+      if (!payload) return null;
+      const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+      const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+      return JSON.parse(atob(padded));
+    } catch {
+      return null;
+    }
+  }
+
+  function sessionAuthTime(session) {
+    const payload = decodeJwtPayload(session?.idToken);
+    const seconds = Number(payload?.auth_time || 0);
+    return Number.isFinite(seconds) && seconds > 0
+      ? new Date(seconds * 1000)
+      : null;
+  }
+
+  function assertCurrentSecurityDay(session) {
+    const authTime = sessionAuthTime(session);
+    if (
+      !authTime ||
+      securityDateKey(authTime) !== securityDateKey(new Date())
+    ) {
+      clearSession();
+      throw new Error(
+        "Sua sessão diária foi encerrada por segurança. Faça login novamente."
+      );
+    }
+    return session;
+  }
 
   // O token do portal existe somente durante a sessão da aba.
   // Qualquer sessão antiga persistida em localStorage é invalidada.
@@ -121,9 +175,14 @@
   async function getSession({ forceRefresh = false } = {}) {
     let session = readSession();
     if (!session) throw new Error("Entre novamente para continuar.");
+
+    assertCurrentSecurityDay(session);
+
     if (forceRefresh || !session.idToken || Date.now() >= Number(session.expiresAt || 0)) {
       session = await refreshSession(session);
+      assertCurrentSecurityDay(session);
     }
+
     return session;
   }
 
@@ -413,9 +472,56 @@
     );
   }
 
+
+  async function platformOpenSupportSession(organizationId, moduleName, reason, minutes = 20) {
+    const session = await getSession();
+    return rpc(
+      "platform_open_support_session",
+      {
+        target_organization_id: organizationId,
+        target_module: String(moduleName || "").trim(),
+        target_reason: String(reason || "").trim(),
+        target_minutes: Number(minutes || 20),
+      },
+      session.idToken,
+    );
+  }
+
+  async function platformReadSupportSession(sessionId, limit = 25, offset = 0) {
+    const session = await getSession();
+    return rpc(
+      "platform_read_support_session",
+      {
+        target_session_id: sessionId,
+        target_limit: Number(limit || 25),
+        target_offset: Number(offset || 0),
+      },
+      session.idToken,
+    );
+  }
+
+  async function platformCloseSupportSession(sessionId) {
+    const session = await getSession();
+    return rpc(
+      "platform_close_support_session",
+      { target_session_id: sessionId },
+      session.idToken,
+    );
+  }
+
   function signOut() {
     clearSession();
   }
+
+  setInterval(() => {
+    const session = readSession();
+    if (!session) return;
+    try {
+      assertCurrentSecurityDay(session);
+    } catch {
+      window.dispatchEvent(new CustomEvent("nexo:daily-session-expired"));
+    }
+  }, 15000);
 
   window.NexoApi = {
     config,
@@ -451,5 +557,8 @@
     platformUpdateBranchPricing,
     platformUpdateOrganizationAdminData,
     platformUpdateBranchData,
+    platformOpenSupportSession,
+    platformReadSupportSession,
+    platformCloseSupportSession,
   };
 })();
