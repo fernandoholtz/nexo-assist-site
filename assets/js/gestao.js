@@ -3,6 +3,10 @@
   const appSection=document.querySelector("[data-admin-app]");
   const loginForm=document.querySelector("[data-admin-login-form]");
   const loginButton=document.querySelector("[data-admin-login-button]");
+  const adminMfaField=document.querySelector("[data-admin-mfa-field]");
+  const adminMfaCode=document.querySelector("#adminMfaCode");
+  const adminMfaCancel=document.querySelector("[data-admin-mfa-cancel]");
+  let adminMfaChallenge=null;
   const logoutButton=document.querySelector("[data-admin-logout]");
   const refreshButton=document.querySelector("[data-admin-refresh]");
   const metrics=document.querySelector("[data-admin-metrics]");
@@ -615,23 +619,58 @@
     }
   }
 
+  function setAdminMfaMode(challenge){
+    adminMfaChallenge=challenge||null;
+    const active=Boolean(adminMfaChallenge);
+    if(adminMfaField)adminMfaField.hidden=!active;
+    if(adminMfaCancel)adminMfaCancel.hidden=!active;
+    if(loginButton)loginButton.textContent=active?"Confirmar código":"Entrar no painel";
+    if(active){
+      if(adminMfaCode){
+        adminMfaCode.value="";
+        adminMfaCode.focus();
+      }
+      showToast("Senha confirmada. Informe o código do aplicativo autenticador.");
+    }
+  }
+
   loginForm?.addEventListener("submit",async event=>{
     event.preventDefault();
     loginButton.disabled=true;
-    loginButton.textContent="Entrando...";
+    loginButton.textContent=adminMfaChallenge?"Confirmando...":"Entrando...";
 
     try{
-      await window.NexoApi.signIn(
-        document.querySelector("#adminEmail").value,
-        document.querySelector("#adminPassword").value,
-      );
+      if(adminMfaChallenge){
+        await window.NexoApi.completeTotpSignIn(
+          adminMfaChallenge,
+          String(adminMfaCode?.value||""),
+        );
+        adminMfaChallenge=null;
+      }else{
+        const result=await window.NexoApi.signIn(
+          document.querySelector("#adminEmail").value,
+          document.querySelector("#adminPassword").value,
+        );
+
+        if(result?.mfaRequired){
+          setAdminMfaMode(result);
+          return;
+        }
+      }
+
       await loadDashboard();
     }catch(error){
+      if(!adminMfaChallenge)window.NexoApi.clearSession();
       showToast(error instanceof Error?error.message:"Não foi possível entrar.");
     }finally{
       loginButton.disabled=false;
-      loginButton.textContent="Entrar no painel";
+      loginButton.textContent=adminMfaChallenge?"Confirmar código":"Entrar no painel";
     }
+  });
+
+  adminMfaCancel?.addEventListener("click",()=>setAdminMfaMode(null));
+  adminMfaCode?.addEventListener("input",()=>{
+    adminMfaCode.value=String(adminMfaCode.value||"").replace(/\D/g,"").slice(0,6);
   });
 
   logoutButton?.addEventListener("click",()=>{
