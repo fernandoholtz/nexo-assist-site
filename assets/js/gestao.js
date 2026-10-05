@@ -259,13 +259,19 @@
     const actions=el("div","admin-actions");
     const openButton=el("button","btn btn-primary","Abrir suporte temporário");
     openButton.type="button";
+    const sensitiveButton=el(
+      "button",
+      "btn btn-danger",
+      "Abrir suporte sensível • exige 2FA"
+    );
+    sensitiveButton.type="button";
     const refreshSupport=el("button","btn btn-secondary","Atualizar dados");
     refreshSupport.type="button";
     refreshSupport.hidden=true;
     const closeSupport=el("button","btn btn-danger","Encerrar suporte");
     closeSupport.type="button";
     closeSupport.hidden=true;
-    actions.append(openButton,refreshSupport,closeSupport);
+    actions.append(openButton,sensitiveButton,refreshSupport,closeSupport);
     wrap.append(actions);
 
     const status=el("p","account-copy","");
@@ -282,7 +288,11 @@
         const expires=currentSession.expires_at
           ?new Date(currentSession.expires_at).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})
           :"";
-        status.textContent="Sessão ativa para "+String(currentSession.module||"módulo")+" • expira às "+expires+".";
+        const accessLabel=
+          String(payload?.access_level||currentSession?.access_level||"minimized")==="sensitive"
+            ?"SUPORTE SENSÍVEL"
+            :"SUPORTE MINIMIZADO";
+        status.textContent=accessLabel+" • "+String(currentSession.module||"módulo")+" • expira às "+expires+".";
         renderSupportResult(result,payload);
       }catch(error){
         currentSession=null;
@@ -316,6 +326,37 @@
         showToast(error instanceof Error?error.message:"Não foi possível abrir o suporte.");
       }finally{
         openButton.disabled=false;
+      }
+    });
+
+
+    sensitiveButton.addEventListener("click",async()=>{
+      const reason=String(reasonField.input.value||"").trim();
+      if(reason.length<10){
+        showToast("Para dados sensíveis, informe um motivo detalhado com pelo menos 10 caracteres.");
+        return;
+      }
+
+      sensitiveButton.disabled=true;
+      try{
+        currentSession=await window.NexoApi.platformOpenSensitiveSupportSession(
+          organizationId,
+          moduleSelect.value,
+          reason,
+          Math.min(10,Number(timeField.input.value||10)),
+        );
+        refreshSupport.hidden=false;
+        closeSupport.hidden=false;
+        showToast("Suporte sensível aberto por tempo limitado e registrado na auditoria.");
+        await loadSupportData();
+      }catch(error){
+        showToast(
+          error instanceof Error
+            ? error.message
+            : "Não foi possível abrir o suporte sensível."
+        );
+      }finally{
+        sensitiveButton.disabled=false;
       }
     });
 
