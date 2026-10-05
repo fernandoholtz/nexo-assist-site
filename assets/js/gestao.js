@@ -158,6 +158,184 @@
     });
   }
 
+
+  function supportValue(value){
+    if(value===null||value===undefined||value==="")return "—";
+    if(typeof value==="object"){
+      try{return JSON.stringify(value);}
+      catch{return String(value);}
+    }
+    return String(value);
+  }
+
+  function renderSupportResult(container,payload){
+    clear(container);
+    const total=Number(payload?.total||0);
+    const items=Array.isArray(payload?.items)?payload.items:[];
+
+    container.append(
+      el("p","account-copy",total+" registro(s) encontrado(s). Mostrando até "+String(items.length)+".")
+    );
+
+    if(items.length===0){
+      container.append(el("p","account-copy","Nenhum registro disponível neste módulo."));
+      return;
+    }
+
+    items.forEach((item,index)=>{
+      const block=el("details","admin-branch-editor");
+      const summary=el("summary");
+      const label=
+        item?.protocol||
+        item?.name||
+        item?.full_name||
+        item?.title||
+        item?.email||
+        item?.id||
+        ("Registro "+String(index+1));
+      summary.append(el("strong","",label));
+      block.append(summary);
+
+      const body=el("div","admin-edit-form");
+      Object.entries(item||{}).forEach(([key,value])=>{
+        addDataRow(body,key.replaceAll("_"," "),supportValue(value));
+      });
+      block.append(body);
+      container.append(block);
+    });
+  }
+
+  function buildSupportPanel(organizationId){
+    const wrap=el("section","admin-editor");
+    wrap.append(
+      el("h4","admin-subtitle","Suporte técnico auditado"),
+      el(
+        "p",
+        "account-copy",
+        "Use apenas quando precisar investigar um problema real. O acesso é temporário, limitado a um módulo e cada leitura fica registrada na auditoria da plataforma."
+      )
+    );
+
+    const form=el("div","admin-edit-grid");
+    const moduleField=el("div","field");
+    moduleField.append(el("label","","Módulo"));
+    const moduleSelect=el("select");
+    [
+      ["service_orders","Ordens de serviço"],
+      ["sales","Vendas"],
+      ["customers","Clientes"],
+      ["products","Produtos / estoque"],
+      ["employees","Funcionários"],
+      ["goals","Metas"],
+      ["users","Usuários e acessos"],
+      ["suppliers","Fornecedores"],
+      ["campaigns","Campanhas"],
+      ["audit","Auditoria da empresa"],
+      ["documents","Documentos de RH • metadados"],
+    ].forEach(([value,label])=>{
+      const option=el("option","",label);
+      option.value=value;
+      moduleSelect.append(option);
+    });
+    moduleField.append(moduleSelect);
+
+    const reasonField=buildField(
+      "Motivo do acesso",
+      "",
+      {required:true,placeholder:"Ex.: investigar falha relatada na OS 123"}
+    );
+
+    const timeField=buildField("Duração em minutos","20",{type:"number"});
+    timeField.input.min="5";
+    timeField.input.max="30";
+
+    form.append(moduleField,reasonField.wrap,timeField.wrap);
+    wrap.append(form);
+
+    const actions=el("div","admin-actions");
+    const openButton=el("button","btn btn-primary","Abrir suporte temporário");
+    openButton.type="button";
+    const refreshSupport=el("button","btn btn-secondary","Atualizar dados");
+    refreshSupport.type="button";
+    refreshSupport.hidden=true;
+    const closeSupport=el("button","btn btn-danger","Encerrar suporte");
+    closeSupport.type="button";
+    closeSupport.hidden=true;
+    actions.append(openButton,refreshSupport,closeSupport);
+    wrap.append(actions);
+
+    const status=el("p","account-copy","");
+    const result=el("div","admin-support-results");
+    wrap.append(status,result);
+
+    let currentSession=null;
+
+    async function loadSupportData(){
+      if(!currentSession?.id)return;
+      try{
+        const payload=await window.NexoApi.platformReadSupportSession(currentSession.id,25,0);
+        currentSession.expires_at=payload?.expires_at||currentSession.expires_at;
+        const expires=currentSession.expires_at
+          ?new Date(currentSession.expires_at).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})
+          :"";
+        status.textContent="Sessão ativa para "+String(currentSession.module||"módulo")+" • expira às "+expires+".";
+        renderSupportResult(result,payload);
+      }catch(error){
+        currentSession=null;
+        refreshSupport.hidden=true;
+        closeSupport.hidden=true;
+        status.textContent=error instanceof Error?error.message:"A sessão de suporte não está mais disponível.";
+        clear(result);
+      }
+    }
+
+    openButton.addEventListener("click",async()=>{
+      const reason=String(reasonField.input.value||"").trim();
+      if(reason.length<5){
+        showToast("Informe um motivo de acesso com pelo menos 5 caracteres.");
+        return;
+      }
+
+      openButton.disabled=true;
+      try{
+        currentSession=await window.NexoApi.platformOpenSupportSession(
+          organizationId,
+          moduleSelect.value,
+          reason,
+          Number(timeField.input.value||20),
+        );
+        refreshSupport.hidden=false;
+        closeSupport.hidden=false;
+        showToast("Sessão temporária de suporte aberta e auditada.");
+        await loadSupportData();
+      }catch(error){
+        showToast(error instanceof Error?error.message:"Não foi possível abrir o suporte.");
+      }finally{
+        openButton.disabled=false;
+      }
+    });
+
+    refreshSupport.addEventListener("click",()=>void loadSupportData());
+
+    closeSupport.addEventListener("click",async()=>{
+      if(!currentSession?.id)return;
+      try{
+        await window.NexoApi.platformCloseSupportSession(currentSession.id);
+        showToast("Sessão de suporte encerrada.");
+      }catch(error){
+        showToast(error instanceof Error?error.message:"Não foi possível encerrar a sessão.");
+      }finally{
+        currentSession=null;
+        refreshSupport.hidden=true;
+        closeSupport.hidden=true;
+        status.textContent="Sessão encerrada.";
+        clear(result);
+      }
+    });
+
+    return wrap;
+  }
+
   async function openOrganization(id){
     clear(detail);
     detail.append(el("p","account-copy","Carregando empresa..."));
@@ -407,6 +585,7 @@
 
       actions.append(planButton,saveButton,toggleButton);
       detail.append(actions);
+      detail.append(buildSupportPanel(id));
     }catch(error){
       clear(detail);
       detail.append(
