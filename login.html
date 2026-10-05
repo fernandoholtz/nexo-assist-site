@@ -31,7 +31,13 @@
       <form data-login-form>
         <div class="field"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" required placeholder="voce@empresa.com.br"></div>
         <div class="field"><label for="password">Senha</label><div class="password-wrap"><input id="password" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" data-password-toggle="password" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div></div>
-        <button class="btn btn-primary" type="submit">Entrar</button>
+        <div class="field" data-mfa-field hidden>
+          <label for="mfaCode">Código do autenticador</label>
+          <input id="mfaCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000">
+          <small>Abra o aplicativo autenticador cadastrado e informe o código atual de 6 dígitos.</small>
+        </div>
+        <button class="btn btn-primary" type="submit" data-login-button>Entrar</button>
+        <button class="btn btn-secondary" type="button" data-mfa-cancel hidden>Cancelar 2FA</button>
       </form>
       <div class="helper-links"><a href="#" data-password-reset>Esqueci minha senha</a><a href="cadastro.html">Criar empresa</a></div>
       <div class="dev-note">A mesma conta funciona no aplicativo e no portal. Esta área é reservada ao proprietário da empresa.</div>
