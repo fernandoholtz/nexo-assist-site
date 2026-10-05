@@ -564,6 +564,25 @@
     );
   }
 
+  async function platformOpenSensitiveSupportSession(
+    organizationId,
+    moduleName,
+    reason,
+    minutes = 10
+  ) {
+    const session = await getSession();
+    return rpc(
+      "platform_open_sensitive_support_session",
+      {
+        target_organization_id: organizationId,
+        target_module: String(moduleName || "").trim(),
+        target_reason: String(reason || "").trim(),
+        target_minutes: Math.min(10, Math.max(5, Number(minutes || 10))),
+      },
+      session.idToken,
+    );
+  }
+
   async function platformReadSupportSession(sessionId, limit = 25, offset = 0) {
     const session = await getSession();
     return rpc(
@@ -636,6 +655,7 @@
     platformUpdateOrganizationAdminData,
     platformUpdateBranchData,
     platformOpenSupportSession,
+    platformOpenSensitiveSupportSession,
     platformReadSupportSession,
     platformCloseSupportSession,
   };
