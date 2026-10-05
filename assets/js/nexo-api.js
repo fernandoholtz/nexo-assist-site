@@ -126,6 +126,19 @@
     return readJson(response);
   }
 
+  async function firebaseV2Request(path, payload) {
+    const { firebaseApiKey } = config();
+    const response = await fetch(
+      "https://identitytoolkit.googleapis.com/v2/" + path + "?key=" + encodeURIComponent(firebaseApiKey),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+    return readJson(response);
+  }
+
   function saveSession(data, email) {
     const expiresIn = Number(data.expiresIn || data.expires_in || 3600);
     const session = {
@@ -203,7 +216,71 @@
       password,
       returnSecureToken: true,
     });
+
+    if (data?.mfaPendingCredential && !data?.idToken) {
+      const factors = (Array.isArray(data.mfaInfo) ? data.mfaInfo : [])
+        .filter(
+          (item) =>
+            item?.mfaEnrollmentId &&
+            Object.prototype.hasOwnProperty.call(item, "totpInfo")
+        )
+        .map((item) => ({
+          mfaEnrollmentId: String(item.mfaEnrollmentId),
+          displayName: String(item.displayName || "Aplicativo autenticador"),
+        }));
+
+      if (!factors.length) {
+        throw new Error(
+          "Esta conta exige um segundo fator que ainda não é suportado neste portal."
+        );
+      }
+
+      return {
+        mfaRequired: true,
+        email: normalized,
+        mfaPendingCredential: String(data.mfaPendingCredential),
+        factors,
+      };
+    }
+
     return saveSession(data, normalized);
+  }
+
+  async function completeTotpSignIn(challenge, verificationCode) {
+    const pending = String(challenge?.mfaPendingCredential || "");
+    const email = String(challenge?.email || "").trim().toLowerCase();
+    const code = String(verificationCode || "").replace(/\D/g, "").slice(0, 6);
+    const factor = Array.isArray(challenge?.factors)
+      ? challenge.factors.find((item) => item?.mfaEnrollmentId)
+      : null;
+
+    if (!pending || !factor?.mfaEnrollmentId) {
+      throw new Error("O desafio de autenticação em duas etapas expirou. Entre novamente.");
+    }
+
+    if (code.length !== 6) {
+      throw new Error("Informe o código de 6 dígitos do aplicativo autenticador.");
+    }
+
+    const data = await firebaseV2Request("accounts/mfaSignIn:finalize", {
+      mfaPendingCredential: pending,
+      mfaEnrollmentId: String(factor.mfaEnrollmentId),
+      totpVerificationInfo: {
+        verificationCode: code,
+      },
+    });
+
+    if (!data?.idToken || !data?.refreshToken) {
+      throw new Error("O Firebase não confirmou a autenticação em duas etapas.");
+    }
+
+    return saveSession(
+      {
+        ...data,
+        expiresIn: data.expiresIn || data.expires_in || 3600,
+      },
+      email
+    );
   }
 
   async function signInWithEmailLink(email, oobCode) {
@@ -527,6 +604,7 @@
     config,
     signUp,
     signIn,
+    completeTotpSignIn,
     signInWithEmailLink,
     updatePassword,
     signOut,
