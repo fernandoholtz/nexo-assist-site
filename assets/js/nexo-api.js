@@ -550,6 +550,35 @@
   }
 
 
+  async function platformListAccountDeletionRequests() {
+    const session = await getSession();
+    return rpc("platform_list_account_deletion_requests", {}, session.idToken);
+  }
+
+  async function platformProcessAccountDeletion(requestId, reason) {
+    const session = await getSession();
+    return rpc(
+      "platform_process_account_deletion",
+      {
+        target_request_id: String(requestId || "").trim(),
+        target_reason: String(reason || "").trim(),
+      },
+      session.idToken,
+    );
+  }
+
+  async function platformMarkFirebaseAccountDeleted(requestId, reason) {
+    const session = await getSession();
+    return rpc(
+      "platform_mark_firebase_account_deleted",
+      {
+        target_request_id: String(requestId || "").trim(),
+        target_reason: String(reason || "").trim(),
+      },
+      session.idToken,
+    );
+  }
+
   async function platformOpenSupportSession(organizationId, moduleName, reason, minutes = 20) {
     const session = await getSession();
     return rpc(
@@ -675,6 +704,9 @@
     platformUpdateBranchPricing,
     platformUpdateOrganizationAdminData,
     platformUpdateBranchData,
+    platformListAccountDeletionRequests,
+    platformProcessAccountDeletion,
+    platformMarkFirebaseAccountDeleted,
     platformOpenSupportSession,
     platformOpenSensitiveSupportSession,
     platformReadSupportSession,
