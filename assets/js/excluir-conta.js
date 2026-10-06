@@ -3,6 +3,7 @@ const signedOut=document.querySelector("[data-signed-out]");
 const signedIn=document.querySelector("[data-signed-in]");
 const statusBox=document.querySelector("[data-request-status]");
 const requestButton=document.querySelector("[data-delete-request]");
+const permanentButton=document.querySelector("[data-delete-permanent]");
 const cancelButton=document.querySelector("[data-delete-cancel]");
 const logoutButton=document.querySelector("[data-logout]");
 
@@ -21,6 +22,7 @@ function renderRequest(request){
   if(!statusBox)return;
   if(!request){
     statusBox.hidden=true;
+    permanentButton.hidden=true;
     cancelButton.hidden=true;
     requestButton.hidden=false;
     return;
@@ -33,6 +35,7 @@ function renderRequest(request){
   span.textContent="Registrado em "+date(request.requested_at)+".";
   statusBox.append(strong,span);
   requestButton.hidden=true;
+  permanentButton.hidden=request.status!=="requested";
   cancelButton.hidden=request.status!=="requested";
 }
 
@@ -66,6 +69,42 @@ requestButton?.addEventListener("click",async()=>{
     toastMessage(error instanceof Error?error.message:"Não foi possível registrar o pedido.");
   }finally{
     requestButton.disabled=false;
+  }
+});
+
+permanentButton?.addEventListener("click",async()=>{
+  if(!window.confirm(
+    "Esta etapa remove definitivamente sua identidade de autenticação e encerra o acesso à conta. Continuar?"
+  ))return;
+
+  if(!window.confirm(
+    "Confirmação final irreversível: deseja excluir definitivamente a conta agora?"
+  ))return;
+
+  permanentButton.disabled=true;
+  cancelButton.disabled=true;
+
+  try{
+    const current=await window.NexoApi.getAccountDeletionRequests();
+    if(!current?.id){
+      toastMessage("Nenhum pedido aberto foi encontrado.");
+      return;
+    }
+
+    await window.NexoApi.permanentlyDeleteAccount(current.id);
+    toastMessage("Conta excluída. Sua sessão foi encerrada.");
+    signedIn.hidden=true;
+    signedOut.hidden=false;
+    setTimeout(()=>window.location.assign("login.html?motivo=conta-excluida"),900);
+  }catch(error){
+    toastMessage(
+      error instanceof Error
+        ?error.message
+        :"Não foi possível concluir a exclusão definitiva."
+    );
+  }finally{
+    permanentButton.disabled=false;
+    cancelButton.disabled=false;
   }
 });
 
