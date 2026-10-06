@@ -82,6 +82,46 @@
     };
   }
 
+  const REQUEST_TIMEOUT_MS = 20_000;
+
+  async function fetchWithTimeout(input, init = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const externalSignal = init.signal;
+    let timedOut = false;
+
+    const abortFromCaller = () => controller.abort();
+
+    if (externalSignal) {
+      if (externalSignal.aborted) {
+        controller.abort();
+      } else {
+        externalSignal.addEventListener("abort", abortFromCaller, { once: true });
+      }
+    }
+
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, timeoutMs);
+
+    try {
+      return await window.fetch(input, {
+        ...init,
+        signal: controller.signal,
+      });
+    } catch (error) {
+      if (timedOut) {
+        throw new Error(
+          "O servidor não respondeu em até 20 segundos. A operação não será repetida automaticamente; confirme o estado da tela antes de tentar novamente."
+        );
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+      externalSignal?.removeEventListener("abort", abortFromCaller);
+    }
+  }
+
   async function readJson(response) {
     let data = null;
     try {
@@ -115,7 +155,7 @@
 
   async function firebaseRequest(path, payload) {
     const { firebaseApiKey } = config();
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       "https://identitytoolkit.googleapis.com/v1/" + path + "?key=" + encodeURIComponent(firebaseApiKey),
       {
         method: "POST",
@@ -128,7 +168,7 @@
 
   async function firebaseV2Request(path, payload) {
     const { firebaseApiKey } = config();
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       "https://identitytoolkit.googleapis.com/v2/" + path + "?key=" + encodeURIComponent(firebaseApiKey),
       {
         method: "POST",
@@ -173,7 +213,7 @@
       grant_type: "refresh_token",
       refresh_token: session.refreshToken,
     });
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       "https://securetoken.googleapis.com/v1/token?key=" + encodeURIComponent(firebaseApiKey),
       {
         method: "POST",
@@ -341,7 +381,7 @@
     };
     if (idToken) headers.Authorization = "Bearer " + idToken;
 
-    const response = await fetch(supabaseUrl + "/rest/v1/rpc/" + encodeURIComponent(name), {
+    const response = await fetchWithTimeout(supabaseUrl + "/rest/v1/rpc/" + encodeURIComponent(name), {
       method: "POST",
       headers,
       body: JSON.stringify(args || {}),
@@ -434,6 +474,32 @@
     return rpc("request_account_deletion", {}, session.idToken);
   }
 
+  async function permanentlyDeleteAccount(requestId) {
+    const session = await getSession({ forceRefresh: true });
+    const { firebaseApiKey, supabaseUrl, supabasePublishableKey } = config();
+
+    const response = await fetchWithTimeout(
+      supabaseUrl + "/functions/v1/self-delete-account",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + session.idToken,
+          apikey: supabasePublishableKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          requestId: String(requestId || "").trim(),
+          firebaseApiKey,
+        }),
+      },
+      25000
+    );
+
+    const payload = await readJson(response);
+    clearSession();
+    return payload;
+  }
+
   async function cancelAccountDeletionRequest() {
     const session = await getSession();
     return rpc("cancel_account_deletion_request", {}, session.idToken);
@@ -445,7 +511,7 @@
     const url =
       supabaseUrl +
       "/rest/v1/account_deletion_requests?select=id,status,requested_at,organization_id,requester_role&status=in.(requested,processing)&order=requested_at.desc&limit=1";
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       headers: {
         apikey: supabasePublishableKey,
         Authorization: "Bearer " + session.idToken,
@@ -694,6 +760,7 @@
     reactivateTrialSubscription,
     changeTrialPlan,
     requestAccountDeletion,
+    permanentlyDeleteAccount,
     cancelAccountDeletionRequest,
     getAccountDeletionRequests,
     getPlatformAdminDashboard,
