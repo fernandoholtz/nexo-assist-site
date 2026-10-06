@@ -13,6 +13,7 @@
   const list=document.querySelector("[data-admin-companies-list]");
   const detail=document.querySelector("[data-admin-detail]");
   const plans=document.querySelector("[data-admin-plans]");
+  const deletionList=document.querySelector("[data-admin-deletions]");
   const search=document.querySelector("#adminSearch");
   const toast=document.querySelector("[data-admin-toast]");
   let dashboard=null;
@@ -110,6 +111,126 @@
       button.addEventListener("click",()=>void openOrganization(button.dataset.orgId));
       list.append(button);
     });
+  }
+
+  function formatDateTime(value){
+    if(!value)return "—";
+    const parsed=new Date(value);
+    return Number.isNaN(parsed.getTime())
+      ?String(value)
+      :parsed.toLocaleString("pt-BR");
+  }
+
+  async function renderDeletionRequests(){
+    if(!deletionList)return;
+    clear(deletionList);
+    deletionList.append(el("p","account-copy","Carregando pedidos de exclusão..."));
+
+    try{
+      const rows=await window.NexoApi.platformListAccountDeletionRequests();
+      clear(deletionList);
+
+      if(!Array.isArray(rows)||rows.length===0){
+        deletionList.append(el("p","account-copy","Nenhum pedido de exclusão registrado."));
+        return;
+      }
+
+      rows.forEach(item=>{
+        const block=el("div","admin-branch-editor");
+        const header=el("div","account-card-head");
+        const title=el("div");
+        title.append(
+          el("strong","",item.organization_name||"Conta sem empresa ativa"),
+          el("small","",String(item.requester_role||"usuário")+" • "+String(item.status||"requested"))
+        );
+        header.append(title);
+        block.append(header);
+
+        addDataRow(block,"Solicitado em",formatDateTime(item.requested_at));
+        addDataRow(block,"Banco processado",formatDateTime(item.database_processed_at));
+        addDataRow(block,"Firebase removido",formatDateTime(item.firebase_deleted_at));
+
+        const actions=el("div","admin-actions");
+
+        if(item.status==="requested"&&!item.database_processed_at){
+          const processButton=el("button","btn btn-danger","Processar exclusão no banco");
+          processButton.type="button";
+          processButton.addEventListener("click",async()=>{
+            const reason=window.prompt(
+              "Motivo detalhado do processamento (mínimo 10 caracteres):"
+            );
+            if(!reason)return;
+            if(String(reason).trim().length<10){
+              showToast("Informe um motivo com pelo menos 10 caracteres.");
+              return;
+            }
+            if(!window.confirm(
+              "Esta ação remove os acessos da conta no Nexo Assist e pseudonimiza o identificador. Continuar?"
+            ))return;
+
+            processButton.disabled=true;
+            try{
+              await window.NexoApi.platformProcessAccountDeletion(item.id,reason);
+              showToast("Banco processado. A identidade Firebase ainda precisa ser removida.");
+              await renderDeletionRequests();
+            }catch(error){
+              showToast(error instanceof Error?error.message:"Não foi possível processar a exclusão.");
+            }finally{
+              processButton.disabled=false;
+            }
+          });
+          actions.append(processButton);
+        }
+
+        if(item.status==="processing"&&item.database_processed_at&&!item.firebase_deleted_at){
+          const firebaseButton=el(
+            "button",
+            "btn btn-danger",
+            "Confirmar remoção no Firebase"
+          );
+          firebaseButton.type="button";
+          firebaseButton.addEventListener("click",async()=>{
+            const reason=window.prompt(
+              "Confirme no Firebase Authentication que o usuário foi removido e descreva a verificação:"
+            );
+            if(!reason)return;
+            if(String(reason).trim().length<10){
+              showToast("Descreva a confirmação com pelo menos 10 caracteres.");
+              return;
+            }
+            if(!window.confirm(
+              "Marque como concluído somente se a identidade Firebase já tiver sido realmente removida. Confirmar?"
+            ))return;
+
+            firebaseButton.disabled=true;
+            try{
+              await window.NexoApi.platformMarkFirebaseAccountDeleted(item.id,reason);
+              showToast("Pedido de exclusão concluído e auditado.");
+              await renderDeletionRequests();
+            }catch(error){
+              showToast(error instanceof Error?error.message:"Não foi possível concluir o pedido.");
+            }finally{
+              firebaseButton.disabled=false;
+            }
+          });
+          actions.append(firebaseButton);
+        }
+
+        if(actions.childNodes.length)block.append(actions);
+        deletionList.append(block);
+      });
+    }catch(error){
+      clear(deletionList);
+      deletionList.append(
+        el(
+          "p",
+          "admin-warning",
+          error instanceof Error
+            ?error.message
+            :"Não foi possível carregar os pedidos. Entre com 2FA."
+        )
+      );
+    }
   }
 
   function renderPlans(){
@@ -649,6 +770,7 @@
       renderMetrics(dashboard?.summary||{});
       renderCompanies();
       renderPlans();
+      await renderDeletionRequests();
     }catch(error){
       window.NexoApi.clearSession();
       loginSection.hidden=false;
