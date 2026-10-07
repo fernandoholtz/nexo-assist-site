@@ -26,6 +26,7 @@
         <a class="active" href="#assinatura">Assinatura</a>
         <a href="#pagamentos">Pagamentos</a><a href="#uso-plano">Uso do plano</a>
         <a href="#empresa">Empresa</a>
+        <a href="#backup">Exportar dados</a>
         <a href="#seguranca-conta">Segurança</a>
       </nav>
       <div class="dev-note">Dados carregados da conta autenticada. Cobranças externas só serão ativadas quando o provedor estiver configurado.</div>
@@ -75,6 +76,29 @@
           <div><small>Perfil</small><strong>Proprietário / OWNER</strong></div>
           <div><small>Acesso</small><strong data-account-email>Mesmo login do aplicativo</strong></div>
         </div>
+      </section>
+      <section class="account-card account-wide" id="backup">
+        <div class="account-card-head">
+          <div>
+            <span class="card-kicker">Portabilidade e contingência</span>
+            <h3>Exportar dados operacionais</h3>
+          </div>
+          <span class="prototype-pill">OWNER</span>
+        </div>
+        <p class="account-copy">
+          Gere um arquivo JSON com os principais dados operacionais da empresa:
+          unidades, clientes, fornecedores, produtos, estoque, vendas, OS, compras,
+          financeiro, RH e campanhas. O arquivo não inclui senhas, tokens,
+          chaves administrativas nem os arquivos binários privados do Storage.
+        </p>
+        <div class="legal-note">
+          A exportação contém dados pessoais e empresariais. Armazene o arquivo
+          em local protegido e compartilhe somente quando necessário. A geração
+          fica registrada na auditoria da empresa.
+        </div>
+        <button class="btn btn-secondary" type="button" data-export-backup>
+          Baixar exportação JSON
+        </button>
       </section>
       <section class="account-card account-wide" id="seguranca-conta">
         <span class="card-kicker">Segurança da conta</span><h3>O proprietário mantém o controle da assinatura.</h3>
