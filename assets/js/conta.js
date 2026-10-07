@@ -94,6 +94,49 @@ document.querySelector("[data-cancel-confirm]")?.addEventListener("click",async(
     await load();
   }catch(error){toastMessage(error instanceof Error?error.message:"Não foi possível cancelar.");}
 });
+document.querySelector("[data-export-backup]")?.addEventListener("click",async(event)=>{
+  const button=event.currentTarget;
+  const orgId=snapshot?.organization?.id;
+  if(!orgId)return;
+
+  button.disabled=true;
+  const original=button.textContent;
+  button.textContent="Preparando exportação...";
+
+  try{
+    const payload=await window.NexoApi.exportOrganizationOperationalData(orgId);
+    const company=String(snapshot?.organization?.name||"empresa")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g,"")
+      .replace(/[^a-zA-Z0-9]+/g,"-")
+      .replace(/^-+|-+$/g,"")
+      .toLowerCase()||"empresa";
+    const day=new Date().toISOString().slice(0,10);
+    const blob=new Blob(
+      [JSON.stringify(payload,null,2)],
+      {type:"application/json;charset=utf-8"}
+    );
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement("a");
+    link.href=url;
+    link.download="nexo-assist-"+company+"-"+day+".json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    toastMessage("Exportação operacional gerada. Guarde o arquivo em local protegido.");
+  }catch(error){
+    toastMessage(
+      error instanceof Error
+        ?error.message
+        :"Não foi possível gerar a exportação."
+    );
+  }finally{
+    button.disabled=false;
+    button.textContent=original;
+  }
+});
+
 document.querySelector("[data-logout]")?.addEventListener("click",event=>{
   event.preventDefault();
   window.NexoApi.signOut();
