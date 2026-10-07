@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://vjynwgktulgwmgodluhp.supabase.co; form-action 'self'; upgrade-insecure-requests">
+  <meta name="description" content="Acompanhe sua ordem de serviço e responda ao orçamento pelo link seguro do Nexo Assist.">
+  <title>Acompanhar OS | Nexo Assist</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="index.html"><span class="brand-mark"></span><strong>Nexo Assist</strong></a>
+    <div class="nav-actions"><a class="btn btn-secondary" href="privacidade.html">Privacidade</a></div>
+  </div>
+</header>
+
+<main>
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Acompanhamento seguro</span>
+      <h1>Acompanhe sua ordem de serviço</h1>
+      <p>Este endereço foi gerado pela assistência para uma OS específica. Não é necessário criar conta nem informar senha.</p>
+    </div>
+  </section>
+
+  <section class="section compact">
+    <div class="container legal-content">
+      <div data-loading class="legal-note">
+        Carregando a ordem de serviço...
+      </div>
+
+      <div data-error hidden>
+        <h2>Não foi possível abrir este link</h2>
+        <p data-error-message>O link pode ter expirado, sido revogado ou estar incorreto.</p>
+        <p>Solicite um novo endereço à assistência responsável.</p>
+      </div>
+
+      <div data-order hidden>
+        <span class="eyebrow" data-organization>Assistência</span>
+        <h2 data-protocol>OS</h2>
+        <div class="legal-note">
+          <strong data-device>Equipamento</strong>
+          <div style="margin-top:8px" data-status>Status</div>
+        </div>
+
+        <h2>Atendimento</h2>
+        <p><strong>Unidade:</strong> <span data-branch>—</span></p>
+        <p><strong>Problema informado:</strong> <span data-problem>—</span></p>
+        <p><strong>Diagnóstico:</strong> <span data-diagnosis>—</span></p>
+        <p><strong>Serviço recomendado:</strong> <span data-service>—</span></p>
+        <p><strong>Previsão:</strong> <span data-estimate>—</span></p>
+        <p><strong>Garantia:</strong> <span data-warranty>—</span></p>
+
+        <h2>Orçamento</h2>
+        <div class="pricing-disclosure">
+          <strong data-budget>—</strong>
+          <span data-approval-copy>Aguardando decisão.</span>
+        </div>
+
+        <div data-decision-box hidden style="margin-top:20px">
+          <label for="customerDecisionNote"><strong>Observação opcional</strong></label>
+          <textarea id="customerDecisionNote" rows="4" maxlength="500" placeholder="Se desejar, deixe uma observação para a assistência." style="width:100%;margin-top:8px;padding:12px;border:1px solid #d7dce3;border-radius:12px;font:inherit"></textarea>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px">
+            <button class="btn btn-primary" type="button" data-approve>Aprovar orçamento</button>
+            <button class="btn btn-danger" type="button" data-reject>Recusar orçamento</button>
+          </div>
+        </div>
+
+        <div data-decision-result class="legal-note" hidden style="margin-top:20px"></div>
+
+        <h2>Histórico público</h2>
+        <div data-timeline class="plan-footnotes"></div>
+
+        <p style="margin-top:24px">
+          Este link mostra apenas informações necessárias para acompanhar esta OS.
+          Dados cadastrais, telefone, endereço, CPF, número de série/IMEI, fotos privadas e notas internas não são exibidos.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 Nexo Assist.</span>
+      <span><a href="privacidade.html">Política de Privacidade</a> · <a href="termos.html">Termos de Uso</a></span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" data-toast></div>
+<script src="assets/js/runtime-config.js"></script>
+<script src="assets/js/nexo-api.js"></script>
+<script src="assets/js/acompanhar-os.js"></script>
+</body>
+</html>
