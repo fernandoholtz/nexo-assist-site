@@ -425,6 +425,15 @@
     return rpc("bootstrap_saas_owner", payload, verifiedSession.idToken);
   }
 
+  async function exportOrganizationOperationalData(organizationId) {
+    const session = await getSession({ forceRefresh: true });
+    return rpc(
+      "export_organization_operational_data",
+      { target_organization_id: organizationId },
+      session.idToken,
+    );
+  }
+
   async function getBranchEntitlement(organizationId) {
     const session = await getSession();
     return rpc(
@@ -754,6 +763,7 @@
     bootstrapCompany,
     bootstrapCompanyWithBranches,
     getPublicPlanCatalog,
+    exportOrganizationOperationalData,
     getBranchEntitlement,
     getOwnerPortalSnapshot,
     cancelTrialSubscription,
